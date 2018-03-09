@@ -1,0 +1,8 @@
+/include/types/*
+!/include/types/type_bool.php
+!/include/types/type_date.php
+!/include/types/type_datetime.php
+!/include/types/type_float.php
+!/include/types/type_int.php
+!/include/types/type_time.php
+!/include/types/type_timestamp.php

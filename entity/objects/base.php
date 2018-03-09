@@ -11,6 +11,9 @@
 namespace Ms\Dobrozhil\Entity\Objects;
 
 use Ms\Core\Lib\Tools;
+use Ms\Dobrozhil\Lib\Classes;
+use Ms\Dobrozhil\Lib\Objects;
+use Ms\Dobrozhil\Lib\Types;
 use Ms\Dobrozhil\Tables;
 use Ms\Core\Entity\Db\Query\QueryBase;
 use Ms\Core\Entity\Db\SqlHelper;
@@ -25,6 +28,10 @@ class Base
 	public $_classType = null;
 
 	private $arPropertyValues = array();
+
+	private $arLastMethodName = null;
+
+	private $arLastMethodParams = null;
 
 	public function __construct ($objectName)
 	{
@@ -83,9 +90,7 @@ class Base
 	 */
 	final public function __call ($name, $arguments)
 	{
-		// TODO: Implement __call() method.
-
-		return '';
+		return $this->runMethod($name,$arguments);
 	}
 
 	/**
@@ -126,17 +131,18 @@ class Base
 
 	/**
 	 * Возвращает структуру объекта при использовании в функции var_dump()
+	 * Работает с PHP 5.6.0
 	 *
 	 * @return array
 	 */
-	final public function __debugInfo()
+	public function __debugInfo()
 	{
 		$arReturn  = get_object_vars($this);
 		if (isset($arReturn['arPropertyValues']))
 		{
 			unset($arReturn['arPropertyValues']);
 		}
-		$allProp = $this->getAllProperties();
+		$allProp = Objects::getAllProperties($this->_objectName);
 		$arReturn = array_merge($arReturn,$allProp);
 
 		return $arReturn;
@@ -154,145 +160,59 @@ class Base
 		return $strReturn;
 	}
 
-	/* GETS */
+	/* RUN */
 
-	/**
-	 * Возвращает требуемые свойства из таблицы объектов
-	 *
-	 * @param $propertyName
-	 * @return array|bool|string
-	 */
-	final public function getObjectParams ($propertyName)
+	final public function runMethod ($methodName, $arParams)
 	{
-		$arRes = Tables\ObjectsTable::getOne(
+		///this[ ]*-\>[ ]*runParent[ ]*\(([ ]*)\);/
+		//$res = $this ->runParent ();
+		$arMethod = Classes::getClassMethod(
+			$this->_className,
+			$methodName,
 			array(
-				'select' => $propertyName,
-				'filter' => array('NAME'=>$this->_objectName)
+				'SCRIPT_NAME',
+				'CODE',
+				'UPDATED'
 			)
 		);
 
-		return $arRes;
-	}
-
-	/**
-	 * Возвращает требуемые параметры из таблицы классов
-	 *
-	 * @param $propertyName
-	 * @return array|bool|string
-	 */
-	final public function getClassParams ($propertyName)
-	{
-		$arRes = Tables\ClassesTable::getOne(
-			array(
-				'select' => $propertyName,
-				'filter' => array('NAME'=>$this->_className)
-			)
-		);
-
-		return $arRes;
-	}
-
-	/**
-	 * Возвращает список свойств текущего класса
-	 *
-	 * @param null|string имя класса, по умолчанию класс объекта
-	 * @param null|array|string список получаемых полей, по умолчанию ('NAME','LINKED')
-	 *
-	 * @return array|bool
-	 */
-	final public function getClassPropertiesList ($className = null, $arFields = null)
-	{
-		if (is_null($className))
+		if (!is_null($arMethod['SCRIPT_NAME']))
 		{
-			$className = $this->_className;
+			//Здесь будет выполнятся скрипт
 		}
-		if (is_null($arFields))
+		elseif (!is_null($arMethod['CODE']))
 		{
-			$arFields = array('NAME','LINKED');
-		}
-
-		$arRes = Tables\ClassPropertiesTable::getList(
-			array(
-				'select' => $arFields,
-				'filter' => array('CLASS_NAME'=>$className)
-			)
-		);
-
-		return $arRes;
-	}
-
-	/**
-	 * Возвращает список со значениями всех свойств объекта, включая наследуемые свойства
-	 *
-	 * @return array
-	 */
-	final public function getAllProperties ()
-	{
-		$arProperties = array();
-		$arClassParent = $this->getClassParams('PARENT_LIST');
-		if ($arClassParent)
-		{
-			$arClassParent = $arClassParent['PARENT_LIST'];
-		}
-		if ($arClassParent && is_array($arClassParent))
-		{
-			$arClassParent[] = $this->_className;
-		}
-		else
-		{
-			$arClassParent = array($this->_className);
-		}
-		while (count($arClassParent)>0)
-		{
-			$className = array_pop($arClassParent);
-			$arRes = $this->getClassPropertiesList($className,'*');
-			if ($arRes)
+			$parentClass = Classes::getClassParams($this->_className,'PARENT_CLASS');
+			if ($parentClass)
 			{
-				foreach ($arRes as $ar_res)
-				{
-					$arRes2 = Tables\ObjectsPropertyValuesTable::getOne(
-						array(
-							'select' => array('VALUE'),
-							'filter' => array('NAME'=>$this->_objectName.'.'.$ar_res['PROPERTY_NAME'])
-						)
-					);
-					if ($arRes2)
-					{
-						if (!isset($arProperties[$ar_res['PROPERTY_NAME']]))
-						{
-							$arProperties[$ar_res['PROPERTY_NAME']] = $arRes2['VALUE'];
-						}
-					}
-					else
-					{
-						if (!isset($arProperties[$ar_res['PROPERTY_NAME']]))
-						{
-							$arProperties[$ar_res['PROPERTY_NAME']] = null;
-						}
-					}
-				}
+				$this->arLastMethodName[$parentClass] = $methodName;
+				$this->arLastMethodParams[$parentClass] = $arParams;
 			}
+
+			//Тут выволняется код
+			$result = eval($arMethod['CODE']);
+
+			$arUpdate = array(
+				'LAST_PARAMETERS' => $arParams,
+				'LAST_RUN' => new Date(),
+				'UPDATED' => $arMethod['UPDATED']
+			);
+
+			Tables\ClassMethodsTable::update($this->_className.'.'.$methodName,$arUpdate);
+
+			return $result;
 		}
 
-		return $arProperties;
+		return null;
 	}
 
-	/**
-	 * Возвращает требуемые свойства для таблицы свойства класса 
-	 * 
-	 * @param        $propertyName
-	 * @param string $fields
-	 * @return array|bool|string
-	 */
-	final public function getClassPropertiesParams ($propertyName, $fields='*')
+	final public function runParent()
 	{
-		return Tables\ClassPropertiesTable::getOne(
-			array(
-				'select' => $fields,
-				'filter' => array('NAME'=>$this->_className.'.'.$propertyName)
-			)
-		);
+
+		return null;
 	}
+
+	/* GETS */
 
 	/**
 	 * Возвращает значение указанного свойства
@@ -308,78 +228,15 @@ class Base
 			return $this->arPropertyValues[$name];
 		}
 
-		$arRes = Tables\ObjectsPropertyValuesTable::getOne(
-			array(
-				'select' => array('VALUE'),
-				'filter' => array('NAME'=>$this->_objectName.'.'.$name)
-			)
-		);
-
-		if (!$arRes || is_null($arRes['VALUE']))
+		$propertyValue = Objects::getProperty($this->_objectName,$name);
+		if (is_null($propertyValue))
 		{
 			return null;
 		}
-		else
-		{
-			//Получаем тип значения свойства
-			if ($valueType = $this->getClassPropertiesParams($name,'TYPE'))
-			{
-				$bOk = false;
-				if (isset($valueType['TYPE']) && !is_null($valueType['TYPE']))
-				{
-					$valueType = strtolower($valueType['TYPE']);
-					$bOk = true;
-				}
-				elseif (isset($valueType['TYPE']))
-				{
-					$valueType = 'string';
-					$bOk = true;
-				}
-				//Если тип свойства установлен
-				if ($bOk)
-				{
-					switch ($valueType)
-					{
-						case 'int':
-							$arRes['VALUE'] = Tools::validateIntVal($arRes['VALUE']);
-							break;
-						case 'float':
-							$arRes['VALUE'] = Tools::validateFloatVal($arRes['VALUE']);
-							break;
-						case 'string':
-							$arRes['VALUE'] = Tools::validateStringVal($arRes['VALUE']);
-							break;
-						case 'bool':
-							$arRes['VALUE'] = Tools::validateBoolVal($arRes['VALUE']);
-							break;
-						case 'date':
-							$arRes['VALUE'] = Tools::validateDateVal($arRes['VALUE']);
-							break;
-						default:
-							$arRes['VALUE'] = $this->validatePropertyValue($arRes['VALUE'],$valueType);
-							break;
-					}
-				}
-			}
-			$this->arPropertyValues[$name] = $arRes['VALUE'];
-			return $arRes['VALUE'];
-		}
-	}
 
-	/**
-	 * Возвращает параметры значения указанного свойства объекта
-	 *
-	 * @param string $name Название свойства
-	 *
-	 * @return array|bool|string
-	 */
-	final public function getPropertyInfo ($name)
-	{
-		return Tables\ObjectsPropertyValuesTable::getOne(
-			array(
-				'filter' => array('NAME'=>$this->_objectName.'.'.$name)
-			)
-		);
+		$this->arPropertyValues[$name] = $propertyValue;
+
+		return $propertyValue;
 	}
 
 	/* SETS */
@@ -394,82 +251,12 @@ class Base
 	 */
 	final public function setProperty ($name, $value)
 	{
-		//Сначала получаем текущее значение свойства
-		$arNowValue = $this->getPropertyInfo($name);
-
-		//Получаем параметры свойства
-		$arParams = $this->getClassPropertiesParams($name,array('SAVE_IDENTICAL_VALUES','HISTORY'));
-
-		//Если такого свойства не существует, автоматически создаем новое свойство объекта и записываем в него null
-		if (!$arNowValue)
+		$res = Objects::setProperty($this->_objectName,$name,$value);
+		if ($res === true)
 		{
-			Tables\ObjectsPropertyValuesTable::add(array('NAME' => $this->_objectName.'.'.$name));
-			$arNowValue = $this->getPropertyInfo($name);
-		}
-
-		if ($arNowValue && !$arParams)
-		{
-			$arParams = array(
-				'SAVE_IDENTICAL_VALUES' => false,
-				'HISTORY' => 0
-			);
-		}
-
-		$bSave = false;
-		//Если значения равны
-		if ($arNowValue['VALUE'] == $value)
-		{
-			//Если требуется сохранять равные значения
-			if ($arParams['SAVE_IDENTICAL_VALUES']===true)
-			{
-				$bSave = true;
-			}
-		}
-		else
-		{
-			$bSave = true;
-		}
-
-		$arUpdate = array('UPDATED'=>new Date());
-		//Если ведется история, чистим от всего лишнего
-		if ((int)$arParams['HISTORY']>0)
-		{
-			$helper = new SqlHelper(Tables\ObjectsPropertyValuesHistory::getTableName());
-			$nowDate = new Date();
-			$nowDate->modify('-'.$arParams['HISTORY'].' day');
-			$sql = 'DELETE FROM '.$helper->wrapTableQuotes().' WHERE '.$helper->wrapFieldQuotes('DATETIME')
-				.' < '.$nowDate->getDateTimeDB();
-			$query = new QueryBase($sql);
-			$query->exec();
-		}
-
-		//Если нужно записывать значение
-		if ($bSave)
-		{
-			//Если ведется история, пишем старое значение в историю
-			if ((int)$arParams['HISTORY']>0)
-			{
-				Tables\ObjectsPropertyValuesHistory::add(
-					array(
-						'NAME'=>$this->_objectName.'.'.$name,
-						'VALUE' => $arNowValue['VALUE'],
-						'DATETIME' => $arNowValue['UPDATED']
-					)
-				);
-			}
-
-			$arUpdate['VALUE'] = $value;
 			$this->arPropertyValues[$name] = $value;
 		}
 
-		//Обновляем либо значение, либо только время обновления свойства
-		return Tables\ObjectsPropertyValuesTable::update($this->_objectName.'.'.$name,$arUpdate);
+		return $res;
 	}
-
-	private function validatePropertyValue($value, $valueType)
-	{
-		//Здесь будет подключаться функция валидации значения свойства указанного типа
-		return $value;
-	}
-
 }

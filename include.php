@@ -18,9 +18,11 @@ $namespaceRoot = 'Ms\Dobrozhil';
 Loader::AddAutoLoadClasses(
 	array(
 		/** Entity\Objects */
-		$namespaceRoot.'\Entity\Objects\Base' => $moduleRoot.'/entity/base.php',
+		$namespaceRoot.'\Entity\Objects\Base' => $moduleRoot.'/entity/objects/base.php',
 		/** Lib */
+		$namespaceRoot.'\Lib\Classes' => $moduleRoot.'/lib/classes.php',
 		$namespaceRoot.'\Lib\Objects' => $moduleRoot.'/lib/objects.php',
+		$namespaceRoot.'\Lib\Types' => $moduleRoot.'/lib/types.php',
 		/** Tables */
 		$namespaceRoot.'\Tables\ClassMethodsTable' => $moduleRoot.'/tables/class_methods.php',
 		$namespaceRoot.'\Tables\ClassPropertiesTable' => $moduleRoot.'/tables/class_properties.php',

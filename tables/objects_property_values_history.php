@@ -13,9 +13,14 @@ namespace Ms\Dobrozhil\Tables;
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
+use Ms\Dobrozhil\Lib\Classes;
+use Ms\Dobrozhil\Lib\Objects;
+use Ms\Core\Entity\Db\DBResult;
 
-class ObjectsPropertyValuesHistory extends Lib\DataManager
+class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 {
+	protected static $updateType = null;
+
 	public static function getTableTitle ()
 	{
 		return 'Исторические значения свойств объектов';
@@ -29,6 +34,9 @@ class ObjectsPropertyValuesHistory extends Lib\DataManager
 				'required' => true,
 				'title' => 'Полное имя свойства вида объект.свойство'
 			)),
+			new Fields\StringField('TYPE',array(
+				'title' => 'Тип значения свойства'
+			)),
 			new Fields\TextField('VALUE',array(
 				'title' => 'Значение свойства'
 			)),
@@ -37,5 +45,37 @@ class ObjectsPropertyValuesHistory extends Lib\DataManager
 				'default_insert' => new Date(),
 			))
 		);
+	}
+
+	protected static function OnAfterInsert ($arAdd,$res)
+	{
+		static::setType($arAdd,$res);
+	}
+
+	/**
+	 * @param $arAddUpdate
+	 * @param DBResult $res
+	 */
+	protected static function setType ($arAddUpdate, $res)
+	{
+		if (!is_null(static::$updateType) || !$res->getResult())
+		{
+			return;
+		}
+		static::$updateType = true;
+
+		list($sObjectName,$sPropertyName) = explode('.',$arAddUpdate['NAME']);
+		$objectClassName = Objects::getClassByObject($sObjectName);
+		if ($objectClassName)
+		{
+			$objectClassName = $objectClassName['CLASS_NAME'];
+			$type = Classes::getClassPropertiesParams($objectClassName,$sPropertyName,'TYPE');
+			static::update(
+				$res->getInsertId(),
+				array('TYPE'=>strtoupper($type))
+			);
+		}
+
+		static::$updateType = null;
 	}
 }
