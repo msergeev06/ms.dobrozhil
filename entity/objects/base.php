@@ -27,11 +27,11 @@ class Base
 
 	public $_classType = null;
 
-	private $arPropertyValues = array();
+	private $_arPropertyValues = array();
 
-	private $arLastMethodName = null;
+	private $_arLastMethodName = null;
 
-	private $arLastMethodParams = null;
+	private $_arLastMethodParams = null;
 
 	public function __construct ($objectName)
 	{
@@ -73,7 +73,7 @@ class Base
 	 * @param string $name Название свойства объекта
 	 * @param mixed $value Значение свойства объекта
 	 *
-	 * @return \MSergeev\Core\Entity\Db\DBResult
+	 * @return bool
 	 */
 	final public function __set ($name, $value)
 	{
@@ -101,7 +101,7 @@ class Base
 	 */
 	final public function __isset ($name)
 	{
-		if (isset($this->arPropertyValues[$name]))
+		if (isset($this->_arPropertyValues[$name]))
 		{
 			return true;
 		}
@@ -123,27 +123,37 @@ class Base
 	 */
 	final public function __unset ($name)
 	{
-		if (isset($this->arPropertyValues[$name]))
+		if (isset($this->_arPropertyValues[$name]))
 		{
-			unset($this->arPropertyValues[$name]);
+			unset($this->_arPropertyValues[$name]);
 		}
 	}
 
 	/**
 	 * Возвращает структуру объекта при использовании в функции var_dump()
-	 * Работает с PHP 5.6.0
 	 *
 	 * @return array
 	 */
 	public function __debugInfo()
 	{
 		$arReturn  = get_object_vars($this);
-		if (isset($arReturn['arPropertyValues']))
+		if (isset($arReturn['_arPropertyValues']))
 		{
-			unset($arReturn['arPropertyValues']);
+			unset($arReturn['_arPropertyValues']);
+		}
+		if (isset($arReturn['_arLastMethodName']))
+		{
+			unset($arReturn['_arLastMethodName']);
+		}
+		if (isset($arReturn['_arLastMethodParams']))
+		{
+			unset($arReturn['_arLastMethodParams']);
 		}
 		$allProp = Objects::getAllProperties($this->_objectName);
-		$arReturn = array_merge($arReturn,$allProp);
+		if ($allProp && !empty($allProp))
+		{
+			$arReturn = array_merge($arReturn,$allProp);
+		}
 
 		return $arReturn;
 	}
@@ -155,19 +165,31 @@ class Base
 	 */
 	final public function __toString ()
 	{
-		$strReturn = '['.$this->_objectName.']';
+		$strReturn = '['.$this->_className.'.'.$this->_objectName.']';
 
 		return $strReturn;
 	}
 
 	/* RUN */
 
-	final public function runMethod ($methodName, $arParams)
+	/**
+	 * Выполняет метод класса объекта
+	 *
+	 * @param string      $methodName Имя метода
+	 * @param array      $arParams   Список параметров
+	 * @param null|string $className  Имя класса, если не задано - класс объекта
+	 *
+	 * @return mixed|null
+	 */
+	final public function runMethod ($methodName, $arParams=array(), $className=null)
 	{
-		///this[ ]*-\>[ ]*runParent[ ]*\(([ ]*)\);/
-		//$res = $this ->runParent ();
+		if (is_null($className))
+		{
+			$this->_className;
+		}
+
 		$arMethod = Classes::getClassMethod(
-			$this->_className,
+			$className,
 			$methodName,
 			array(
 				'SCRIPT_NAME',
@@ -182,11 +204,11 @@ class Base
 		}
 		elseif (!is_null($arMethod['CODE']))
 		{
-			$parentClass = Classes::getClassParams($this->_className,'PARENT_CLASS');
+			$parentClass = Classes::getClassParams($className,'PARENT_CLASS');
 			if ($parentClass)
 			{
-				$this->arLastMethodName[$parentClass] = $methodName;
-				$this->arLastMethodParams[$parentClass] = $arParams;
+				$this->_arLastMethodName[$parentClass] = $methodName;
+				$this->_arLastMethodParams[$parentClass] = $arParams;
 			}
 
 			//Тут выволняется код
@@ -198,7 +220,7 @@ class Base
 				'UPDATED' => $arMethod['UPDATED']
 			);
 
-			Tables\ClassMethodsTable::update($this->_className.'.'.$methodName,$arUpdate);
+			Tables\ClassMethodsTable::update($className.'.'.$methodName,$arUpdate);
 
 			return $result;
 		}
@@ -206,10 +228,22 @@ class Base
 		return null;
 	}
 
+	/**
+	 * Выполняет метод родительского класса объекта, если он существует
+	 *
+	 * @return mixed|null
+	 */
 	final public function runParent()
 	{
+		$parentClass = Classes::getClassParams($this->_className,'PARENT_CLASS');
+		if (!$parentClass)
+		{
+			return null;
+		}
+		$methodName = $this->_arLastMethodName[$parentClass];
+		$arParams = $this->_arLastMethodParams[$parentClass];
 
-		return null;
+		return $this->runMethod($methodName,$arParams,$parentClass);
 	}
 
 	/* GETS */
@@ -223,9 +257,9 @@ class Base
 	 */
 	final public function getProperty ($name)
 	{
-		if (isset($this->arPropertyValues[$name]))
+		if (isset($this->_arPropertyValues[$name]))
 		{
-			return $this->arPropertyValues[$name];
+			return $this->_arPropertyValues[$name];
 		}
 
 		$propertyValue = Objects::getProperty($this->_objectName,$name);
@@ -234,7 +268,7 @@ class Base
 			return null;
 		}
 
-		$this->arPropertyValues[$name] = $propertyValue;
+		$this->_arPropertyValues[$name] = $propertyValue;
 
 		return $propertyValue;
 	}
@@ -247,14 +281,14 @@ class Base
 	 * @param string $name Название свойства
 	 * @param mixed $value Новое значение свойства
 	 *
-	 * @return \MSergeev\Core\Entity\Db\DBResult
+	 * @return bool
 	 */
 	final public function setProperty ($name, $value)
 	{
 		$res = Objects::setProperty($this->_objectName,$name,$value);
 		if ($res === true)
 		{
-			$this->arPropertyValues[$name] = $value;
+			$this->_arPropertyValues[$name] = $value;
 		}
 
 		return $res;

@@ -15,6 +15,9 @@ use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
 use Ms\Dobrozhil\Lib\Classes;
 use Ms\Dobrozhil\Lib\Objects;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 class ObjectsPropertyValuesTable extends Lib\DataManager
 {
@@ -22,7 +25,7 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 
 	public static function getTableTitle ()
 	{
-		return 'Значение свойств объектов';
+		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //'Значение свойств объектов'
 	}
 
 	protected static function getMap()
@@ -30,19 +33,19 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 		return array(
 			new Fields\StringField('NAME',array(
 				'primary' => true,
-				'title' => 'Полное имя свойства вида объект.свойство'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Полное имя свойства вида объект.свойство'
 			)),
 			new Fields\StringField('TYPE',array(
-				'title' => 'Тип значения свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type') //'Тип значения свойства'
 			)),
 			new Fields\TextField('VALUE',array(
-				'title' => 'Значение свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value') //'Значение свойства'
 			)),
 			new Fields\DateTimeField('UPDATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
 				'default_update' => new Date(),
-				'title' => 'Время обновления свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated') //'Время обновления свойства'
 			))
 		);
 	}
@@ -58,12 +61,12 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 			array(
 				'NAME' => 'System.homeName',
 				'TYPE' => 'STRING',
-				'VALUE' => 'Кузя'
+				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_home_name') //'Кузя'
 			),
 			array(
 				'NAME' => 'System.lastSayMessage',
 				'TYPE' => 'STRING',
-				'VALUE' => 'Первый запуск'
+				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_last_say_message') //'Первый запуск'
 			),
 			array(
 				'NAME' => 'System.minAloudLevel',

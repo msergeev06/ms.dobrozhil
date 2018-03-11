@@ -7,11 +7,15 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
+
 return array(
-	'NAME' => 'SHF "Доброжил"',
-	'DESCRIPTION' => 'Smart Home Framework "Доброжил" - основа вашего Умного дома, его мозг',
+	'NAME' => Loc::getModuleMessage('ms.dobrozhil','name'),
+	'DESCRIPTION' => Loc::getModuleMessage('ms.dobrozhil','description'),
 	'URL' => 'https://dobrozhil.ru',
 	'DOCS' => 'http://docs.dobrozhil.ru',
-	'AUTHOR' => 'Михаил Сергеев',
+	'AUTHOR' => Loc::getModuleMessage('ms.dobrozhil','author'),
 	'AUTHOR_EMAIL' => 'msergeev06@gmail.com'
 );

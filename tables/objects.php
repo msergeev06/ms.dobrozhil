@@ -13,12 +13,15 @@ namespace Ms\Dobrozhil\Tables;
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 class ObjectsTable extends Lib\DataManager
 {
 	public static function getTableTitle ()
 	{
-		return 'Объекты классов';
+		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //'Объекты классов'
 	}
 
 	protected static function getMap ()
@@ -26,35 +29,35 @@ class ObjectsTable extends Lib\DataManager
 		return array(
 			new Fields\StringField('NAME',array(
 				'primary' => true,
-				'title' => 'Имя объекта'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Имя объекта'
 			)),
 			new Fields\StringField('CLASS_NAME',array(
 				'required' => true,
 				'link' => ClassesTable::getTableName().'.NAME',
-				'title' => 'Имя класса объекта'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_class_name') //'Имя класса объекта'
 			)),
 			new Fields\StringField('NOTE',array(
-				'title' => 'Краткое описание объекта класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_note') //'Краткое описание объекта класса'
 			)),
 			new Fields\StringField('ROOM_NAME',array(
-				'title' => 'Имя комнаты, где расположен объект'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_room_name') //'Имя комнаты, где расположен объект'
 			)),
 			new Fields\DateTimeField('CREATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
-				'title' => 'Время создания объекта'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_created') //'Время создания объекта'
 			)),
 			new Fields\DateTimeField('UPDATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
 				'default_update' => new Date(),
-				'title' => 'Время обновления объекта'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated') //'Время обновления объекта'
 			)),
 			new Fields\BooleanField('SYSTEM',array(
 				'required' => true,
 				'default_create' => false,
 				'default_insert' => false,
-				'title' => 'Флаг системного объекта'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_system') //'Флаг системного объекта'
 			))
 		);
 	}
@@ -65,7 +68,7 @@ class ObjectsTable extends Lib\DataManager
 			array(
 				'NAME' => 'System',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Системный объект',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system'), //'Системный объект'
 				'SYSTEM' => true
 			)
 		);

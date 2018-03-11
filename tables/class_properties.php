@@ -14,6 +14,9 @@ use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
 use Ms\Dobrozhil\Lib\Objects;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 class ClassPropertiesTable extends Lib\DataManager
 {
@@ -21,7 +24,7 @@ class ClassPropertiesTable extends Lib\DataManager
 
 	public static function getTableTitle()
 	{
-		return 'Свойства классов';
+		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //'Свойства классов'
 	}
 
 	protected static function getMap ()
@@ -29,49 +32,49 @@ class ClassPropertiesTable extends Lib\DataManager
 		return array(
 			new Fields\StringField('NAME',array(
 				'primary' => true,
-				'title' => 'Полное имя свойства вида класс.свойство'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Полное имя свойства вида класс.свойство'
 			)),
 			new Fields\StringField('PROPERTY_NAME',array(
 				'required' => true,
-				'title' => 'Имя свойства без имени класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_property_name') //'Имя свойства без имени класса'
 			)),
 			new Fields\StringField('CLASS_NAME',array(
 				'required' => true,
 				'link' => ClassesTable::getTableName().'.NAME',
-				'title' => 'Имя класса без имени свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_class_name') //'Имя класса без имени свойства'
 			)),
 			new Fields\StringField('NOTE',array(
-				'title' => 'Краткое описание свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_note') //'Краткое описание свойства'
 			)),
 			new Fields\StringField('TYPE',array(
-				'title' => 'Тип свойства (к чему будут приводится значения)'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type') //'Тип свойства (к чему будут приводится значения)'
 			)),
 			new Fields\IntegerField('HISTORY',array(
 				'required' => true,
 				'default_create' => 0,
 				'default_insert' => 0,
-				'title' => 'Время хранения истории значений в днях (0 - не хранить историю)'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_history') //'Время хранения истории значений в днях (0 - не хранить историю)'
 			)),
 			new Fields\BooleanField('SAVE_IDENTICAL_VALUES',array(
 				'required' => true,
 				'default_create' => false,
 				'default_insert' => false,
-				'title' => 'Сохранять ли одинаковые значения'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_save_identical_values') //'Сохранять ли одинаковые значения'
 			)),
 			new Fields\TextField('LINKED',array(
 				'serialized' => true,
-				'title' => 'Привязки свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_linked') //'Привязки свойства'
 			)),
 			new Fields\DateTimeField('CREATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
-				'title' => 'Время создания свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_created') //'Время создания свойства'
 			)),
 			new Fields\DateTimeField('UPDATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
 				'default_update' => new Date(),
-				'title' => 'Время обновления свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated') //'Время обновления свойства'
 			))
 		);
 	}
@@ -84,77 +87,77 @@ class ClassPropertiesTable extends Lib\DataManager
 				'NAME' => 'CSystem.externalIP',
 				'PROPERTY_NAME' => 'externalIP',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Внешний IP-адрес',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_external_ip'), //'Внешний IP-адрес'
 				'TYPE' => 'STRING'
 			),
 			array(
 				'NAME' => 'CSystem.homeName',
 				'PROPERTY_NAME' => 'homeName',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Как зовут Умный дом',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_home_name'), //'Как зовут Умный дом'
 				'TYPE' => 'STRING'
 			),
 			array(
 				'NAME' => 'CSystem.lastSayMessage',
 				'PROPERTY_NAME' => 'lastSayMessage',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Последняя сказанная фраза',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_last_say_message'), //'Последняя сказанная фраза'
 				'TYPE' => 'STRING'
 			),
 			array(
 				'NAME' => 'CSystem.minAloudLevel',
 				'PROPERTY_NAME' => 'minAloudLevel',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Минимальный уровень сообщения, для произношения вслух',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_min_aloud_level'), //'Минимальный уровень сообщения, для произношения вслух'
 				'TYPE' => 'INT'
 			),
 			array(
 				'NAME' => 'CSystem.networkStatus',
 				'PROPERTY_NAME' => 'networkStatus',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Статус доступа в Интернет',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_network_status'), //'Статус доступа в Интернет'
 				'TYPE' => 'STRING'
 			),
 			array(
 				'NAME' => 'CSystem.somebodyHome',
 				'PROPERTY_NAME' => 'somebodyHome',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Есть ли кто-то дома',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_somebody_home'), //'Есть ли кто-то дома'
 				'TYPE' => 'BOOL'
 			),
 			array(
 				'NAME' => 'CSystem.started',
 				'PROPERTY_NAME' => 'started',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Время запуска системы',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_started'), //'Время запуска системы'
 				'TYPE' => 'DATETIME'
 			),
 			array(
 				'NAME' => 'CSystem.volumeLevel',
 				'PROPERTY_NAME' => 'volumeLevel',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Уровень громкости в процентах',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_volume_level'), //'Уровень громкости в процентах'
 				'TYPE' => 'INT'
 			),
 			array(
 				'NAME' => 'CSystem.sunDayTime',
 				'PROPERTY_NAME' => 'sunDayTime',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Долгота дня',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_sun_day_time'), //'Долгота дня'
 				'TYPE' => 'TIME'
 			),
 			array(
 				'NAME' => 'CSystem.sunRiseTime',
 				'PROPERTY_NAME' => 'sunRiseTime',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Время восхода солнца',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_sun_rise_time'), //'Время восхода солнца'
 				'TYPE' => 'TIME'
 			),
 			array(
 				'NAME' => 'CSystem.sunSetTime',
 				'PROPERTY_NAME' => 'sunSetTime',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => 'Время захода солнца',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_sun_set_time'), //'Время захода солнца'
 				'TYPE' => 'TIME'
 			)
 		);

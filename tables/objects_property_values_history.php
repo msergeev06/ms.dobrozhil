@@ -16,6 +16,9 @@ use Ms\Core\Entity\Db\Fields;
 use Ms\Dobrozhil\Lib\Classes;
 use Ms\Dobrozhil\Lib\Objects;
 use Ms\Core\Entity\Db\DBResult;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 {
@@ -23,7 +26,7 @@ class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 
 	public static function getTableTitle ()
 	{
-		return 'Исторические значения свойств объектов';
+		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //'Исторические значения свойств объектов'
 	}
 
 	protected static function getMap ()
@@ -32,22 +35,23 @@ class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 			Lib\TableHelper::primaryField(),
 			new Fields\StringField('NAME',array(
 				'required' => true,
-				'title' => 'Полное имя свойства вида объект.свойство'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Полное имя свойства вида объект.свойство'
 			)),
 			new Fields\StringField('TYPE',array(
-				'title' => 'Тип значения свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type') //'Тип значения свойства'
 			)),
 			new Fields\TextField('VALUE',array(
-				'title' => 'Значение свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value') //'Значение свойства'
 			)),
 			new Fields\DateTimeField('DATETIME',array(
 				'required' => true,
 				'default_insert' => new Date(),
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_datetime') //'Время установки свойства'
 			))
 		);
 	}
 
-	protected static function OnAfterInsert ($arAdd,$res)
+	protected static function OnAfterAdd ($arAdd,$res)
 	{
 		static::setType($arAdd,$res);
 	}

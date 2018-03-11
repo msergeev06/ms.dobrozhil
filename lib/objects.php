@@ -14,8 +14,14 @@ use Ms\Core\Entity\Db\Query\QueryBase;
 use Ms\Core\Entity\Db\SqlHelper;
 use Ms\Core\Entity\ErrorCollection;
 use Ms\Core\Entity\Type\Date;
+use Ms\Core\Lib\Events;
+use Ms\Core\Lib\Loader;
+use Ms\Dobrozhil\Entity\Objects\Base;
 use Ms\Dobrozhil\Tables\ObjectsTable;
 use Ms\Dobrozhil\Tables;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 /**
  * Class Objects
@@ -68,12 +74,14 @@ class Objects
 		$arAdd = array();
 		if (!isset($sObjectName))
 		{
-			static::addError('Не задано имя объекта','NO_NAME');
+			//'Не задано имя объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_name'),'NO_NAME');
 			return false;
 		}
 		elseif (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 		else
@@ -83,17 +91,20 @@ class Objects
 
 		if (!isset($sClassName))
 		{
-			static::addError('Не задано имя класса объекта','NO_CLASS');
+			//'Не задано имя класса объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_class'),'NO_CLASS');
 			return false;
 		}
 		elseif (!Classes::checkName($sClassName))
 		{
-			static::addError('Имя класса содержит запрещенные символы','CLASS_WRONG_SYMBOLS');
+			//'Имя класса содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_wrong_symbols'),'CLASS_WRONG_SYMBOLS');
 			return false;
 		}
 		elseif (!Classes::checkClassExists($sClassName))
 		{
-			static::addError('Указанный класс не существует','CLASS_NOT_EXISTS');
+			//'Указанный класс не существует'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_no_exists'),'CLASS_NO_EXISTS');
 			return false;
 		}
 		else
@@ -110,12 +121,14 @@ class Objects
 		{
 			if (!Classes::checkName($sRoomName))
 			{
-				static::addError('Имя объекта комнаты содержит запрещенные символы','ROOM_WRONG_SYMBOLS');
+				//'Имя объекта комнаты содержит запрещенные символы'
+				static::addError(Loc::getModuleMessage('ms.dobrozhil','error_room_wrong_symbols'),'ROOM_WRONG_SYMBOLS');
 				return false;
 			}
 			elseif (!static::checkObjectExists($sRoomName))
 			{
-				static::addError('Заданный объект комнаты не существует','ROOM_NOT_EXISTS');
+				//'Заданный объект комнаты не существует'
+				static::addError(Loc::getModuleMessage('ms.dobrozhil','error_room_no_exists'),'ROOM_NO_EXISTS');
 				return false;
 			}
 			else
@@ -127,7 +140,8 @@ class Objects
 		$res = ObjectsTable::add($arAdd);
 		if (!$res)
 		{
-			static::addError('Не удалось добавить новый объект','NO_ADD');
+			//'Не удалось добавить новый объект'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_add'),'NO_ADD');
 			return false;
 		}
 
@@ -135,6 +149,60 @@ class Objects
 	}
 
 	/* GET */
+
+	public static function getObject($sObjectName)
+	{
+		if (!static::checkObjectExists($sObjectName))
+		{
+			//'Объект с заданным именем не был найден'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_object_not_found'),'OBJECT_NOT_FOUND');
+			return false;
+		}
+
+		if (!$className = static::getClassByObject($sObjectName))
+		{
+			//'Не удалось определить класс объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_object_class_not_found'),'OBJECT_CLASS_NOT_FOUND');
+			return false;
+		}
+
+		$parentsList = Classes::getParentsList($className);
+		if (!$parentsList || empty($parentsList))
+		{
+			//'Не удалось определить родителей класса объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_object_class_parent_not_found'),'OBJECT_CLASS_PARENT_NOT_FOUND');
+			return false;
+		}
+
+		$parentsList = array_reverse($parentsList);
+		foreach ($parentsList as $ar_parent)
+		{
+			$parentParams = Classes::getClassParams($ar_parent['CLASS_NAME']);
+			//TODO: Протестировать родительские программные классы
+			if (!is_null($parentParams['NAMESPACE']))
+			{
+				if (!is_null($parentParams['MODULE']) && $parentParams['MODULE']!='ms.dobrozhil')
+				{
+					if (Loader::issetModule($parentParams['MODULE']) && Loader::includeModule($parentParams))
+					{
+						return new $parentParams['NAMESPACE']($sObjectName);
+					}
+				}
+				else
+				{
+					return new $parentParams['NAMESPACE']($sObjectName);
+				}
+			}
+			elseif (is_null($parentParams['PARENT_CLASS']))
+			{
+				return new Base($sObjectName);
+			}
+		}
+
+		//'Непредвиденная ошибка'
+		static::addError(Loc::getModuleMessage('ms.dobrozhil','error'),'ERROR');
+		return false;
+	}
 
 	/**
 	 * Возвращает список ошибок, возникших в ходе работы методов класса
@@ -158,7 +226,8 @@ class Objects
 	{
 		if (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 
@@ -191,7 +260,8 @@ class Objects
 	{
 		if (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 
@@ -223,12 +293,14 @@ class Objects
 	{
 		if (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 		if (!Classes::checkName($sPropertyName))
 		{
-			static::addError('Имя свойства содержит запрещенные символы','PROPERTY_WRONG_SYMBOL');
+			//'Имя свойства содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
 			return false;
 		}
 
@@ -280,12 +352,14 @@ class Objects
 	{
 		if (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 		if (!Classes::checkName($sPropertyName))
 		{
-			static::addError('Имя свойства содержит запрещенные символы','PROPERTY_WRONG_SYMBOL');
+			//'Имя свойства содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
 			return false;
 		}
 
@@ -301,13 +375,14 @@ class Objects
 	 *
 	 * @param string $sObjectName Имя объекта
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
 	public static function getAllProperties ($sObjectName)
 	{
 		if (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 
@@ -315,7 +390,8 @@ class Objects
 		$objectClassName = static::getClassByObject($sObjectName);
 		if (!$objectClassName)
 		{
-			static::addError('Не удалось определить класс объекта','NO_CLASS_OBJECT');
+			//'Не удалось определить класс объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_class_object'),'NO_CLASS_OBJECT');
 			return false;
 		}
 		$objectClassName = $objectClassName['CLASS_NAME'];
@@ -327,37 +403,56 @@ class Objects
 			while (count($arClassParent)>0)
 			{
 				$className = array_pop($arClassParent);
-				$arRes = Classes::getClassPropertiesList($className,'*');
-				if ($arRes)
+				static::getProperties($className, $sObjectName, $arProperties);
+			}
+		}
+		else
+		{
+			static::getProperties($objectClassName,$sObjectName,$arProperties);
+		}
+
+		return $arProperties;
+	}
+
+	/**
+	 * Получает список свойств для заданного объекта в рамках заданного класса
+	 * и возвращает их в массиве, переданном третьим параметром
+	 *
+	 * @param string $className     Имя класса
+	 * @param string $sObjectName   Имя объекта
+	 * @param array &$arProperties Результирующий массив со списком свойств
+	 *
+	 * @return void
+	 */
+	public static function getProperties($className, $sObjectName, &$arProperties)
+	{
+		$arRes = Classes::getClassPropertiesList($className,'*');
+		if ($arRes)
+		{
+			foreach ($arRes as $ar_res)
+			{
+				$arRes2 = Tables\ObjectsPropertyValuesTable::getOne(
+					array(
+						'select' => array('VALUE'),
+						'filter' => array('NAME'=>$sObjectName.'.'.$ar_res['PROPERTY_NAME'])
+					)
+				);
+				if ($arRes2)
 				{
-					foreach ($arRes as $ar_res)
+					if (!isset($arProperties[$ar_res['PROPERTY_NAME']]))
 					{
-						$arRes2 = Tables\ObjectsPropertyValuesTable::getOne(
-							array(
-								'select' => array('VALUE'),
-								'filter' => array('NAME'=>$sObjectName.'.'.$ar_res['PROPERTY_NAME'])
-							)
-						);
-						if ($arRes2)
-						{
-							if (!isset($arProperties[$ar_res['PROPERTY_NAME']]))
-							{
-								$arProperties[$ar_res['PROPERTY_NAME']] = $arRes2['VALUE'];
-							}
-						}
-						else
-						{
-							if (!isset($arProperties[$ar_res['PROPERTY_NAME']]))
-							{
-								$arProperties[$ar_res['PROPERTY_NAME']] = null;
-							}
-						}
+						$arProperties[$ar_res['PROPERTY_NAME']] = $arRes2['VALUE'];
+					}
+				}
+				else
+				{
+					if (!isset($arProperties[$ar_res['PROPERTY_NAME']]))
+					{
+						$arProperties[$ar_res['PROPERTY_NAME']] = null;
 					}
 				}
 			}
 		}
-
-		return $arProperties;
 	}
 
 	/**
@@ -371,7 +466,8 @@ class Objects
 	{
 		if (!Classes::checkName($sPropertyName))
 		{
-			static::addError('Имя свойства содержит запрещенные символы','PROPERTY_WRONG_SYMBOL');
+			//'Имя свойства содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
 			return false;
 		}
 
@@ -389,7 +485,8 @@ class Objects
 	{
 		if (!Classes::checkName($sClassName))
 		{
-			static::addError('Имя класса содержит запрещенные символы','WRONG_SYMBOLS');
+			//'Имя класса содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_wrong_symbols'),'CLASS_WRONG_SYMBOLS');
 			return false;
 		}
 
@@ -401,7 +498,8 @@ class Objects
 		);
 		if (!$arRes || empty($arRes))
 		{
-			static::addError('Не удалось найти ни одного объекта заданного класса','NO_OBJECTS_IN_CLASS');
+			//'Не удалось найти ни одного объекта заданного класса'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_objects_in_class'),'NO_OBJECTS_IN_CLASS');
 			return false;
 		}
 
@@ -429,28 +527,33 @@ class Objects
 	{
 		if (!isset($sObjectName))
 		{
-			static::addError('Не задано имя объекта','NO_NAME');
+			//'Не задано имя объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_name'),'NO_NAME');
 			return false;
 		}
 		elseif (!Classes::checkName($sObjectName))
 		{
-			static::addError('Имя объекта содержит запрещенные символы','WRONG_SYMBOL');
+			//'Имя объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOL');
 			return false;
 		}
 		elseif (!static::checkObjectExists($sObjectName))
 		{
-			static::addError('Указанный объект не существует','NOT_EXISTS');
+			//'Указанный объект не существует'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_exists'),'NO_EXISTS');
 			return false;
 		}
 
 		if (!isset($sPropertyName))
 		{
-			static::addError('Не задано имя свойства объекта','PROPERTY_NO_NAME');
+			//'Не задано имя свойства объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_no_name'),'PROPERTY_NO_NAME');
 			return false;
 		}
 		elseif (!Classes::checkName($sPropertyName))
 		{
-			static::addError('Имя свойства объекта содержит запрещенные символы','PROPERTY_WRONG_SYMBOL');
+			//'Имя свойства объекта содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOL');
 			return false;
 		}
 
@@ -461,7 +564,8 @@ class Objects
 		$objectClassName = static::getClassByObject($sObjectName);
 		if (!$objectClassName)
 		{
-			static::addError('Не удалось определить класс объекта','NO_CLASS_OBJECT');
+			//'Не удалось определить класс объекта'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_class_object'),'NO_CLASS_OBJECT');
 			return false;
 		}
 		$objectClassName = $objectClassName['CLASS_NAME'];
@@ -543,6 +647,15 @@ class Objects
 		{
 			if ($bSave)
 			{
+				//При изменении свойства запускаем метод класса объекта
+				if ($obj = static::getObject($sObjectName))
+				{
+					$obj->runMethod('onChange_'.$sPropertyName);
+				}
+
+				//А также запускаем событие изменения свойства
+				Events::runEvents('ms.dobrozhil','OnChangeObjectProperty_'.$sPropertyName);
+
 				return true;
 			}
 		}
@@ -562,7 +675,8 @@ class Objects
 	{
 		if (!Classes::checkName($sPropertyName))
 		{
-			static::addError('Имя свойства содержит запрещенные символы','PROPERTY_WRONG_SYMBOL');
+			//'Имя свойства содержит запрещенные символы'
+			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
 			return false;
 		}
 

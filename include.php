@@ -41,7 +41,7 @@ Loader::AddAutoLoadClasses(
 $USER = &Application::getInstance()->getUser();
 if ($USER->getID() != 2)
 {
-	$arRes = \MSergeev\Modules\Kuzmahome\Tables\UsersTable::getOne(
+	$arRes = \Ms\Dobrozhil\Tables\UsersTable::getOne(
 		array(
 			'select' => array('ID','LINKED_OBJECT'),
 			'filter' => array('USER_ID'=>$USER->getID())
@@ -52,11 +52,11 @@ if ($USER->getID() != 2)
 	{
 		$USER->setParam('KUZMA_USER_ID',$arRes['ID']);
 		$USER->setParam('LINKED_OBJECT',$arRes['LINKED_OBJECT']);
-		$USER->setParam('propFullName',\MSergeev\Modules\Kuzmahome\Lib\Objects::getGlobal($arRes['LINKED_OBJECT'].'.propFullName'));
+		$USER->setParam('propFullName',\Ms\Dobrozhil\Lib\Objects::getGlobal($arRes['LINKED_OBJECT'].'.propFullName'));
 	}
 }
 unset($USER);
 */
 
-//$TERMINAL = \MSergeev\Modules\Kuzmahome\Lib\Terminals::initTerminal();
+//$TERMINAL = \Ms\Dobrozhil\Lib\Terminals::initTerminal();
 //$GLOBALS['TERMINAL'] = $TERMINAL;

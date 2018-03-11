@@ -13,12 +13,15 @@ namespace Ms\Dobrozhil\Tables;
 use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
 use Ms\Core\Entity\Type\Date;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 class ClassesTable extends Lib\DataManager
 {
 	public static function getTableTitle()
 	{
-		return 'Классы';
+		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //'Классы'
 	}
 
 	public static function getTableLinks ()
@@ -38,47 +41,47 @@ class ClassesTable extends Lib\DataManager
 		return array(
 			new Fields\StringField('NAME',array(
 				'primary' => true,
-				'title' => 'Имя класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Имя класса'
 			)),
 			Lib\TableHelper::sortField(),
 			new Fields\StringField('NOTE',array(
-				'title' => 'Краткое описание класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_note') //'Краткое описание класса'
 			)),
 			new Fields\StringField('PARENT_CLASS',array(
 				'link' => static::getTableName().'.NAME',
-				'title' => 'Родительский класс'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_parent_class') //'Родительский класс'
 			)),
 			new Fields\TextField('PARENT_LIST',array(
 				'serialized' => true,
-				'title' => 'Список родителей класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','note_parent_list') //'Список родителей класса'
 			)),
 			new Fields\TextField('CHILDREN_LIST',array(
 				'serialized' => true,
-				'title' => 'Список потомков класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','note_children_list') //'Список потомков класса'
 			)),
 			new Fields\StringField('MODULE',array(
-				'title' => 'Модуль, который добавил класс'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_module') //'Модуль, который добавил класс'
 			)),
 			new Fields\StringField('NAMESPACE',array(
-				'title' => 'Путь для создания объекта класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_namespace') //'Путь для создания объекта класса'
 			)),
 			new Fields\StringField('TYPE',array(
 				'required' => true,
 				'size' => 1,
 				'default_create' => 'U',
 				'default_insert' => 'U',
-				'title' => 'Тип класса ("U" - пользовательский, "P" - программный, "S" - системный)'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type') //'Тип класса ("U" - пользовательский, "P" - программный, "S" - системный)'
 			)),
 			new Fields\DateTimeField('CREATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
-				'title' => 'Дата создания класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_created') //'Дата создания класса'
 			)),
 			new Fields\DateTimeField('UPDATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
 				'default_update' => new Date(),
-				'title' => 'Дата последнего редактирования класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated') //'Дата последнего редактирования класса'
 			))
 		);
 	}
@@ -89,7 +92,7 @@ class ClassesTable extends Lib\DataManager
 			array(
 				'NAME' => 'CSystem',
 				'SORT' => 10,
-				'NOTE' => 'Основной класс системы',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_system'), //'Основной класс системы'
 				'TYPE' => 'S'
 			)
 		);
