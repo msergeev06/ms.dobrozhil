@@ -7,8 +7,4 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-return array(
-	'from' => 'Ms\Dobrozhil\Lib\Types::handlerTimeFrom',
-	'to' => 'Ms\Dobrozhil\Lib\Types::handlerTimeTo'
-);
- 
+return '\Ms\Dobrozhil\Entity\Types\TypeTime::getInstance';

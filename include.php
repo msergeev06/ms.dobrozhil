@@ -19,6 +19,18 @@ Loader::AddAutoLoadClasses(
 	array(
 		/** Entity\Objects */
 		$namespaceRoot.'\Entity\Objects\Base' => $moduleRoot.'/entity/objects/base.php',
+		/** Entity\Types */
+		$namespaceRoot.'\Entity\Types\TypeBool' => $moduleRoot.'/entity/types/type_bool.php',
+		$namespaceRoot.'\Entity\Types\TypeDate' => $moduleRoot.'/entity/types/type_date.php',
+		$namespaceRoot.'\Entity\Types\TypeDatetime' => $moduleRoot.'/entity/types/type_datetime.php',
+		$namespaceRoot.'\Entity\Types\TypeFloat' => $moduleRoot.'/entity/types/type_float.php',
+		$namespaceRoot.'\Entity\Types\TypeFloat' => $moduleRoot.'/entity/types/type_float.php',
+		$namespaceRoot.'\Entity\Types\TypeInt' => $moduleRoot.'/entity/types/type_int.php',
+		$namespaceRoot.'\Entity\Types\TypeString' => $moduleRoot.'/entity/types/type_string.php',
+		$namespaceRoot.'\Entity\Types\TypeTime' => $moduleRoot.'/entity/types/type_time.php',
+		$namespaceRoot.'\Entity\Types\TypeTimestamp' => $moduleRoot.'/entity/types/type_timestamp.php',
+		/** Interfaces */
+		$namespaceRoot.'\Interfaces\TypeProcessing' => $moduleRoot.'/interfaces/type_processing.php',
 		/** Lib */
 		$namespaceRoot.'\Lib\Classes' => $moduleRoot.'/lib/classes.php',
 		$namespaceRoot.'\Lib\Objects' => $moduleRoot.'/lib/objects.php',

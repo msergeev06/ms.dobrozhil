@@ -7,8 +7,5 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-return array(
-	'from' => 'Ms\Dobrozhil\Lib\Types::handlerBoolFrom',
-	'to' => 'Ms\Dobrozhil\Lib\Types::handlerBoolTo'
-);
+return '\Ms\Dobrozhil\Entity\Types\TypeBool::getInstance';
  

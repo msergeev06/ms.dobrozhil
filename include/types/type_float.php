@@ -7,8 +7,4 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-return array(
-	'from' => 'Ms\Dobrozhil\Lib\Types::handlerFloatFrom',
-	'to' => 'Ms\Dobrozhil\Lib\Types::handlerFloatTo'
-);
- 
+return '\Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance';

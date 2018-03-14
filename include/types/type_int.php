@@ -7,8 +7,4 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-return array(
-	'from' => 'Ms\Dobrozhil\Lib\Types::handlerIntFrom',
-	'to' => 'Ms\Dobrozhil\Lib\Types::handlerIntTo'
-);
- 
+return '\Ms\Dobrozhil\Entity\Types\TypeInt::getInstance';

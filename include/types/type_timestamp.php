@@ -7,8 +7,4 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-return array(
-	'from' => 'Ms\Dobrozhil\Lib\Types::handlerTimestampFrom',
-	'to' => 'Ms\Dobrozhil\Lib\Types::handlerTimestampTo'
-);
- 
+return '\Ms\Dobrozhil\Entity\Types\TypeTimestamp::getInstance';
