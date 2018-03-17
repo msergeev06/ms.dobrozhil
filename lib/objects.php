@@ -675,7 +675,7 @@ class Objects
 	{
 		if (!Classes::checkName($sPropertyName))
 		{
-			//'Имя свойства содержит запрещенные символы'
+			//
 			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
 			return false;
 		}

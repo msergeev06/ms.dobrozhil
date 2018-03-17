@@ -16,5 +16,17 @@ return array (
 	'field_created' => 'Время создания объекта',
 	'field_updated' => 'Время обновления объекта',
 	'field_system' => 'Флаг системного объекта',
-	'note_system' => 'Системный объект'
+
+	'note_system' => 'Системный объект',
+
+	'note_mode_cinema' => 'Режим просмотра кино',
+	'note_mode_darkness' => 'Режим Темное время суток',
+	'note_mode_eco' => 'Режим экономии',
+	'note_mode_guests' => 'Режим Пришли гости',
+	'note_mode_night' => 'Режим Ночной',
+	'note_mode_nobody_home' => 'Режим Никого нет дома',
+	'note_mode_security_armed' => 'Режим охраны',
+
+	'note_state_system' => 'Состояние системы',
+	'note_state_network' => 'Состояние доступа в интернет'
 );

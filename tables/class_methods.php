@@ -87,48 +87,69 @@ class ClassMethodsTable extends Lib\DataManager
 				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_set_mute'), //'Устанавливает громкость на 0'
 				'CODE' => '$this->volumeLevel = 0;'
 			),
+
 			array(
-				'NAME' => 'CSystem.OnNewDay',
-				'METHOD_NAME' => 'OnNewDay',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_new_day') //'Выполняется каждый новый день'
+				'NAME' => 'COperationModes.activateMode',
+				'METHOD_NAME' => 'activateMode',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_activate_mode'), //'Активирует режим'
+				'CODE' => '$this->isActive = true;'
 			),
 			array(
-				'NAME' => 'CSystem.OnNewHour',
-				'METHOD_NAME' => 'OnNewHour',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_new_hour') //'Выполняется каждый новый час'
+				'NAME' => 'COperationModes.deactivateMode',
+				'METHOD_NAME' => 'deactivateMode',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_deactivate_mode'), //'Деактивирует режим'
+				'CODE' => '$this->isActive = false;'
 			),
 			array(
-				'NAME' => 'CSystem.OnNewMinute',
-				'METHOD_NAME' => 'OnNewMinute',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_new_minute') //'Выполняется каждую новую минуту'
+				'NAME' => 'COperationModes.onChange_isActive',
+				'METHOD_NAME' => 'onChange_isActive',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_on_change_is_active'), //'Срабатывает при изменении свойства isActive'
+				'CODE' => '$this->isActive = false;'
+			),
+
+			array(
+				'NAME' => 'CSystemStates.setGreen',
+				'METHOD_NAME' => 'setGreen',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_green'), //'Устанавливает состояние green'
+				'CODE' => 'if($this->state != "green") $this->state = "green";'
 			),
 			array(
-				'NAME' => 'CSystem.OnNewMonth',
-				'METHOD_NAME' => 'OnNewMonth',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_new_month') //'Выполняется каждый новый месяц'
+				'NAME' => 'CSystemStates.setYellow',
+				'METHOD_NAME' => 'setYellow',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_yellow'), //'Устанавливает состояние yellow'
+				'CODE' => 'if($this->state != "yellow") $this->state = "yellow";'
 			),
 			array(
-				'NAME' => 'CSystem.OnNewYear',
-				'METHOD_NAME' => 'OnNewYear',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_new_year') //'Выполняется каждый новый год'
+				'NAME' => 'CSystemStates.setRed',
+				'METHOD_NAME' => 'setRed',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_red'), //'Устанавливает состояние red'
+				'CODE' => 'if($this->state != "red") $this->state = "red";'
 			),
 			array(
-				'NAME' => 'CSystem.OnShutDown',
-				'METHOD_NAME' => 'OnShutDown',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_shut_down') //'Выполняется перед выключением'
+				'NAME' => 'CSystemStates.onChange_state',
+				'METHOD_NAME' => 'onChange_state',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_on_change_state'), //'Вызывается при изменении состояния'
+				'CODE' => 'switch ($this->state)
+{
+   case "green":
+      say($this->textSayGreen, $this->sayLevelGreen,"SystemStates");
+      break;
+   case "green":
+      say($this->textSayYellow, $this->sayLevelYellow,"SystemStates");
+      break;
+   case "green":
+      say($this->textSayRed, $this->sayLevelRed,"SystemStates");
+      break;
+}
+'
 			),
-			array(
-				'NAME' => 'CSystem.OnStartUp',
-				'METHOD_NAME' => 'OnStartUp',
-				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_on_start_up') //'Выполняется при включении'
-			)
 		);
 	}
 }

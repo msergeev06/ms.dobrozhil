@@ -19,13 +19,16 @@ return array (
 	'field_last_run' => 'Время последнего запуска метода',
 	'field_created' => 'Время создания метода',
 	'field_updated' => 'Время обновления метода',
+
 	'note_set_max_volume' => 'Устанавливает максимальную громкость',
 	'note_set_mute' => 'Устанавливает громкость на 0',
-	'note_on_new_day' => 'Выполняется каждый новый день',
-	'note_on_new_hour' => 'Выполняется каждый новый час',
-	'note_on_new_minute' => 'Выполняется каждую новую минуту',
-	'note_on_new_month' => 'Выполняется каждый новый месяц',
-	'note_on_new_year' => 'Выполняется каждый новый год',
-	'note_on_shut_down' => 'Выполняется перед выключением',
-	'note_on_start_up' => 'Выполняется при включении'
+
+	'note_operation_modes_activate_mode' => 'Активирует режим',
+	'note_operation_modes_deactivate_mode' => 'Деактивирует режим',
+	'note_operation_modes_on_change_is_active' => 'Срабатывает при изменении свойства isActive',
+
+	'note_state_set_state_green' => 'Устанавливает состояние green',
+	'note_state_set_state_yellow' => 'Устанавливает состояние yellow',
+	'note_state_set_state_red' => 'Устанавливает состояние red',
+	'note_state_on_change_state' => 'Вызывается при изменении состояния'
 );

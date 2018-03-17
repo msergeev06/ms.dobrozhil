@@ -64,8 +64,12 @@ class Base
 	 */
 	final public function __get ($name)
 	{
+		$this->onGet($name);
+
 		return $this->getProperty($name);
 	}
+
+	protected function onGet ($name){}
 
 	/**
 	 * Сохраняет значение свойства объекта
@@ -77,8 +81,12 @@ class Base
 	 */
 	final public function __set ($name, $value)
 	{
+		$this->onSet($name,$value);
+
 		return $this->setProperty ($name, $value);
 	}
+
+	protected function onSet ($name, $value){}
 
 	/**
 	 * Вызывает метод класса объекта и передает в него параметры, возвращая результат работы метода
@@ -90,8 +98,12 @@ class Base
 	 */
 	final public function __call ($name, $arguments)
 	{
+		$this->onCall ($name, $arguments);
+
 		return $this->runMethod($name,$arguments);
 	}
+
+	protected function onCall ($name, $arguments) {}
 
 	/**
 	 * Возвращает true, если свойство существует и не равно null
@@ -176,7 +188,7 @@ class Base
 	 * Выполняет метод класса объекта
 	 *
 	 * @param string      $methodName Имя метода
-	 * @param array      $arParams   Список параметров
+	 * @param array       $arParams   Список параметров
 	 * @param null|string $className  Имя класса, если не задано - класс объекта
 	 *
 	 * @return mixed|null

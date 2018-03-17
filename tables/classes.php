@@ -53,11 +53,11 @@ class ClassesTable extends Lib\DataManager
 			)),
 			new Fields\TextField('PARENT_LIST',array(
 				'serialized' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','note_parent_list') //'Список родителей класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_parent_list') //'Список родителей класса'
 			)),
 			new Fields\TextField('CHILDREN_LIST',array(
 				'serialized' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','note_children_list') //'Список потомков класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_children_list') //'Список потомков класса'
 			)),
 			new Fields\StringField('MODULE',array(
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_module') //'Модуль, который добавил класс'
@@ -94,7 +94,89 @@ class ClassesTable extends Lib\DataManager
 				'SORT' => 10,
 				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_system'), //'Основной класс системы'
 				'TYPE' => 'S'
-			)
+			),
+			array(
+				'NAME' => 'CRooms',
+				'SORT' => 15,
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_rooms'), //'Класс комнат дома'
+				'MODULE' => 'ms.dobrozhil',
+				'NAMESPACE' => 'Ms\Dobrozhil\Entity\Objects\Rooms',
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CUsers',
+				'SORT' => 20,
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_users'), //'Класс пользователей системы'
+				'MODULE' => 'ms.dobrozhil',
+				'NAMESPACE' => 'Ms\Dobrozhil\Entity\Objects\Users',
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CSystemStates',
+				'SORT' => 25,
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_system_states'), //'Класс системных статусов'
+				'MODULE' => 'ms.dobrozhil',
+				'NAMESPACE' => 'Ms\Dobrozhil\Entity\Objects\SystemStates',
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'COperationModes',
+				'SORT' => 30,
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_operation_modes'), //'Класс режимов работы'
+				'MODULE' => 'ms.dobrozhil',
+				'NAMESPACE' => 'Ms\Dobrozhil\Entity\Objects\OperationModes',
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CDarknessMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_darkness_mode'), //'Режим Темное время суток'
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CCinemaMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_cinema_mode'), //'Режим кино'
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CEcoMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_eco_mode'), //'Режим экономии'
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CGuestsMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_guests_mode'), //'Режим Пришли гости'
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CNightMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_night_mode'), //'Режим Ночной'
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CNobodyHomeMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_nobody_home_mode'), //'Режим Никого нет дома'
+				'TYPE' => 'S'
+			),
+			array(
+				'NAME' => 'CSecurityArmedMode',
+				'PARENT_CLASS' => 'COperationModes',
+				'PARENT_LIST' => array('COperationModes'),
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_c_security_armed_mode'), //'Режим Охраны'
+				'TYPE' => 'S'
+			),
+
 		);
 	}
 }

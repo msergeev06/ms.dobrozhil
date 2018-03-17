@@ -70,7 +70,70 @@ class ObjectsTable extends Lib\DataManager
 				'CLASS_NAME' => 'CSystem',
 				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system'), //'Системный объект'
 				'SYSTEM' => true
-			)
+			),
+
+			array(
+				'NAME' => 'user_admin',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => 'Admin',
+				'SYSTEM' => false
+			),
+
+			array(
+				'NAME' => 'modeCinema',
+				'CLASS_NAME' => 'CCinemaMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_cinema'), //'Режим просмотра кино'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'modeDarkness',
+				'CLASS_NAME' => 'CDarknessMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_darkness'), //'Режим Темное время суток'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'modeEco',
+				'CLASS_NAME' => 'CEcoMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_eco'), //'Режим экономии'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'modeGuests',
+				'CLASS_NAME' => 'CGuestsMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_guests'), //'Режим Пришли гости'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'modeNight',
+				'CLASS_NAME' => 'CNightMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_night'), //'Режим Ночной'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'modeNobodyHome',
+				'CLASS_NAME' => 'CNobodyHomeMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_nobody_home'), //'Режим Никого нет дома'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'modeSecurityArmed',
+				'CLASS_NAME' => 'CSecurityArmedMode',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_mode_security_armed'), //'Режим охраны'
+				'SYSTEM' => true
+			),
+
+			array(
+				'NAME' => 'stateSystem',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_system'), //'Состояние системы'
+				'SYSTEM' => true
+			),
+			array(
+				'NAME' => 'stateNetwork',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_network'), //'Состояние доступа в интернет'
+				'SYSTEM' => true
+			),
 		);
 	}
 }

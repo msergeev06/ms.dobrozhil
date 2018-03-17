@@ -159,6 +159,220 @@ class ClassPropertiesTable extends Lib\DataManager
 				'CLASS_NAME' => 'CSystem',
 				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_sun_set_time'), //'Время захода солнца'
 				'TYPE' => 'TIME'
+			),
+
+			array(
+				'NAME' => 'CUsers.name',
+				'PROPERTY_NAME' => 'name',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_name'), //'Имя пользователя, как он отображается в чате и как его называет УД'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'CUsers.atHome',
+				'PROPERTY_NAME' => 'atHome',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_at_home'), //'Флаг того, что пользователь находится сейчас дома'
+				'TYPE' => 'BOOL'
+			),
+			array(
+				'NAME' => 'CUsers.batteryLevel',
+				'PROPERTY_NAME' => 'batteryLevel',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_battery_level'), //'Уровень заряда мобильного телефона'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CUsers.isCharging',
+				'PROPERTY_NAME' => 'isCharging',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_is_charging'), //'Флаг того, что устройство заряжается'
+				'TYPE' => 'BOOL'
+			),
+			array(
+				'NAME' => 'CUsers.color',
+				'PROPERTY_NAME' => 'color',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_color'), //'Цвет пользователя'
+				'TYPE' => 'COLOR'
+			),
+			array(
+				'NAME' => 'CUsers.coordinates',
+				'PROPERTY_NAME' => 'coordinates',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_coordinates'), //'Последние координаты пользователя'
+				'TYPE' => 'COORDINATES'
+			),
+			array(
+				'NAME' => 'CUsers.homeDistanceM',
+				'PROPERTY_NAME' => 'homeDistanceM',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_home_distance_m'), //'Расстояние до дома (в метрах)'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CUsers.homeDistanceKm',
+				'PROPERTY_NAME' => 'homeDistanceKm',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_home_distance_km'), //'Расстояние до дома (в километрах)'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CUsers.isMoving',
+				'PROPERTY_NAME' => 'isMoving',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_is_moving'), //'Флаг того, что пользователь движется сейчас'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CUsers.lastLocation',
+				'PROPERTY_NAME' => 'lastLocation',
+				'CLASS_NAME' => 'CUsers',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_user_last_location'), //'Последнее известное местонахождение'
+				'TYPE' => 'INT'
+			),
+
+			array(
+				'NAME' => 'CRooms.title',
+				'PROPERTY_NAME' => 'title',
+				'CLASS_NAME' => 'CRooms',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_room_title'), //'Название комнаты на языке системы'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'CRooms.titleWhere',
+				'PROPERTY_NAME' => 'titleWhere',
+				'CLASS_NAME' => 'CRooms',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_room_title_where'), //'Название комнаты на языке системы (отвечая на вопрос где?)'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'CRooms.latestActivity',
+				'PROPERTY_NAME' => 'latestActivity',
+				'CLASS_NAME' => 'CRooms',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_room_latest_activity'), //'Время, когда была замечена последняя активность в комнате'
+				'TYPE' => 'DATETIME'
+			),
+			array(
+				'NAME' => 'CRooms.activityTimeOut',
+				'PROPERTY_NAME' => 'activityTimeOut',
+				'CLASS_NAME' => 'CRooms',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_room_activity_time_out'), //'Время, через которое считается, что в комнате никого нет (в секундах)'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CRooms.isSomebodyHere',
+				'PROPERTY_NAME' => 'isSomebodyHere',
+				'CLASS_NAME' => 'CRooms',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_room_is_somebody_here'), //'Флаг наличия кого-нибудь в комнате'
+				'TYPE' => 'INT'
+			),
+
+			array(
+				'NAME' => 'COperationModes.sayLevel',
+				'PROPERTY_NAME' => 'sayLevel',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_say_level'), //'Уровень важности сообщений о переключении данного режима'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'COperationModes.textActiveOff',
+				'PROPERTY_NAME' => 'textActiveOff',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_text_active_off'), //'Текст фразы при выключении режима'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'COperationModes.textActiveOn',
+				'PROPERTY_NAME' => 'textActiveOn',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_text_active_on'), //'Текст фразы при включении режима'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'COperationModes.title',
+				'PROPERTY_NAME' => 'title',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_title'), //'Название режима работы'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'COperationModes.isActive',
+				'PROPERTY_NAME' => 'isActive',
+				'CLASS_NAME' => 'COperationModes',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_is_active'), //'Флаг активности данного режима работы'
+				'TYPE' => 'BOOL'
+			),
+
+			array(
+				'NAME' => 'CSystemStates.state',
+				'PROPERTY_NAME' => 'state',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_state'), //'Текущее состояние (green - все хорошо, yellow - идет процесс решения проблем, red - критические проблемы, требуется вмешательство админа)'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'CSystemStates.iconGreen',
+				'PROPERTY_NAME' => 'iconGreen',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_icon_green'), //'Иконка для состояния green'
+				'TYPE' => 'FILE'
+			),
+			array(
+				'NAME' => 'CSystemStates.iconYellow',
+				'PROPERTY_NAME' => 'iconYellow',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_icon_yellow'), //'Иконка для состояния yellow'
+				'TYPE' => 'FILE'
+			),
+			array(
+				'NAME' => 'CSystemStates.iconRed',
+				'PROPERTY_NAME' => 'iconRed',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_icon_red'), //'Иконка для состояния red'
+				'TYPE' => 'FILE'
+			),
+			array(
+				'NAME' => 'CSystemStates.sayLevelGreen',
+				'PROPERTY_NAME' => 'sayLevelGreen',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_say_level_green'), //'Приоритет сообщения для состояния green'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CSystemStates.sayLevelYellow',
+				'PROPERTY_NAME' => 'sayLevelYellow',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_say_level_yellow'), //'Приоритет сообщения для состояния yellow'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CSystemStates.sayLevelRed',
+				'PROPERTY_NAME' => 'sayLevelRed',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_say_level_red'), //'Приоритет сообщения для состояния red'
+				'TYPE' => 'INT'
+			),
+			array(
+				'NAME' => 'CSystemStates.textSayGreen',
+				'PROPERTY_NAME' => 'textSayGreen',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_text_say_green'), //'Текст сообщения для состояния green'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'CSystemStates.textSayYellow',
+				'PROPERTY_NAME' => 'textSayYellow',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_text_say_yellow'), //'Текст сообщения для состояния yellow'
+				'TYPE' => 'STRING'
+			),
+			array(
+				'NAME' => 'CSystemStates.textSayRed',
+				'PROPERTY_NAME' => 'textSayRed',
+				'CLASS_NAME' => 'CSystemStates',
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_system_states_text_say_red'), //'Текст сообщения для состояния red'
+				'TYPE' => 'STRING'
 			)
 		);
 	}
