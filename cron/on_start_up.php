@@ -39,11 +39,11 @@ include_once ($_SERVER['DOCUMENT_ROOT']."/ms/core/prolog_before.php");
 
 if (!$bGoodStart)
 {
-	\Ms\Core\Lib\Logs::write2Log('Система загружена после непредвиденного завершения работы. Активация события OnStartUp');
+	\Ms\Core\Lib\Logs::setInfo('Система загружена после непредвиденного завершения работы. Активация события OnStartUp');
 }
 else
 {
-	\Ms\Core\Lib\Logs::write2Log('Система успешно загружена. Активация события OnStartUp');
+	\Ms\Core\Lib\Logs::setInfo('Система успешно загружена. Активация события OnStartUp');
 }
 
 \Ms\Core\Lib\Events::runEvents('ms.dobrozhil','OnStartUp',array ($bGoodStart));
@@ -53,4 +53,4 @@ if (file_exists($_SERVER['DOCUMENT_ROOT'].'/startup'))
 	unlink($_SERVER['DOCUMENT_ROOT'].'/startup');
 }
 
-\Ms\Core\Lib\Logs::write2Log('Все стартовые действия завершены. Система запущена.');
+\Ms\Core\Lib\Logs::setInfo('Все стартовые действия завершены. Система запущена.');

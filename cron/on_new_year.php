@@ -26,6 +26,6 @@ while (1)
 define('MS_NO_CHECK_AGENTS',true);
 include_once (dirname(__FILE__)."/../../../core/prolog_before.php");
 
-\Ms\Core\Lib\Logs::write2Log('Запуск события OnNewYear');
+\Ms\Core\Lib\Logs::setInfo('Запуск события OnNewYear');
 
 \Ms\Core\Lib\Events::runEvents('ms.dobrozhil','OnNewYear');

@@ -13,7 +13,7 @@ if (!function_exists('shutdown'))
 	{
 		$documentRoot = \Ms\Core\Entity\Application::getInstance()->getDocumentRoot();
 		\Ms\Core\Lib\IO\Files::saveFile($documentRoot.'/shutdown','shutdown');
-		\Ms\Core\Lib\Logs::write2Log('Запуск события OnBeforeShutdown');
+		\Ms\Core\Lib\Logs::setInfo('Запуск события OnBeforeShutdown');
 		\Ms\Core\Lib\Events::runEvents('ms.dobrozhil','OnBeforeShutdown');
 		sleep(5);
 		exec('sudo shutdown now');
@@ -26,7 +26,7 @@ if (!function_exists('reboot'))
 	{
 		$documentRoot = \Ms\Core\Entity\Application::getInstance()->getDocumentRoot();
 		\Ms\Core\Lib\IO\Files::saveFile($documentRoot.'/reboot','reboot');
-		\Ms\Core\Lib\Logs::write2Log('Запуск события OnBeforeReboot');
+		\Ms\Core\Lib\Logs::setInfo('Запуск события OnBeforeReboot');
 		\Ms\Core\Lib\Events::runEvents('ms.dobrozhil','OnBeforeReboot');
 		sleep(5);
 		exec ('sudo reboot now');
