@@ -44,6 +44,7 @@ class ClassMethodsTable extends Lib\DataManager
 				'title' => Loc::getModuleMessage('ms.dobrozhil','filed_note') //'Краткое описание метода'
 			)),
 			new Fields\StringField('SCRIPT_NAME',array(
+				'link' => ScriptsTable::getTableName().'.NAME',
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name') //'Имя скрипта, вместо кода метода'
 			)),
 			new Fields\TextField('CODE',array(

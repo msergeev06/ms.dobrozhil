@@ -30,8 +30,11 @@ class SchedulerTable extends DataManager
 				'primary' => true,
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'ID запланированной задачи'
 			)),
+			new Fields\StringField('SCRIPT_NAME',array (
+				'link' => ScriptsTable::getTableName().'.NAME',
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name') //Имя скрипта, вместо PHP кода
+			)),
 			new Fields\TextField('CODE',array (
-				'required' => true,
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code') //'PHP код задачи'
 			)),
 			new Fields\DateTimeField('RUNTIME',array(

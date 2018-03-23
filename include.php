@@ -40,6 +40,7 @@ Loader::AddAutoLoadClasses(
 		$namespaceRoot.'\Lib\Cron'      => $moduleRoot.'/lib/cron.php',
 		$namespaceRoot.'\Lib\Objects'   => $moduleRoot.'/lib/objects.php',
 		$namespaceRoot.'\Lib\Scheduler' => $moduleRoot.'/lib/scheduler.php',
+		$namespaceRoot.'\Lib\Scripts'   => $moduleRoot.'/lib/scripts.php',
 		$namespaceRoot.'\Lib\Types'     => $moduleRoot.'/lib/types.php',
 		/** Tables */
 		$namespaceRoot.'\Tables\ClassMethodsTable'                  => $moduleRoot.'/tables/class_methods.php',
@@ -49,7 +50,9 @@ Loader::AddAutoLoadClasses(
 		$namespaceRoot.'\Tables\ObjectsTable'                       => $moduleRoot.'/tables/objects.php',
 		$namespaceRoot.'\Tables\ObjectsPropertyValuesTable'         => $moduleRoot.'/tables/objects_property_values.php',
 		$namespaceRoot.'\Tables\ObjectsPropertyValuesHistoryTable'  => $moduleRoot.'/tables/objects_property_values_history.php',
-		$namespaceRoot.'\Tables\SchedulerTable'                     => $moduleRoot.'/tables/scheduler.php'
+		$namespaceRoot.'\Tables\SchedulerTable'                     => $moduleRoot.'/tables/scheduler.php',
+		$namespaceRoot.'\Tables\ScriptsTable'                       => $moduleRoot.'/tables/scripts.php',
+		$namespaceRoot.'\Tables\ScriptsCategoriesTable'             => $moduleRoot.'/tables/scripts_categories.php'
 	)
 );
 

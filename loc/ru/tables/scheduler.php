@@ -10,6 +10,7 @@
 return array (
 	'table_title' => 'Планировщик действий',
 	'field_name' => 'ID запланированной задачи',
+	'field_script_name' => 'Имя скрипта, вместо PHP кода',
 	'field_code' => 'PHP код задачи',
 	'field_runtime' => 'Запланированное время запуска задачи',
 	'field_expire' => 'Время истечения задачи',

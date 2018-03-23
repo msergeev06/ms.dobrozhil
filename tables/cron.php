@@ -46,6 +46,7 @@ class CronTable extends DataManager
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code')
 			)),
 			new Fields\StringField('SCRIPT_NAME',array (
+				'link' => ScriptsTable::getTableName().'.NAME',
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name')
 			)),
 			new Fields\DateTimeField('NEXT_RUN',array (

@@ -98,7 +98,10 @@ class Cron
 					}
 					catch (\Throwable $e)
 					{
-						Logs::write2Log('Возникла ошибка при попытке исполнения CODE_CONDITION в Cron Задаче #'.$arRes['ID'].'. Задача деактивирована.');
+						Logs::setError(
+							'Возникла ошибка при попытке исполнения CODE_CONDITION в Cron Задаче #'.$arRes['ID'].'. Задача деактивирована.',
+							array('EXCEPTION'=>$e)
+						);
 						static::deactivateJob($arRes['ID']);
 						continue;
 					}
@@ -112,7 +115,7 @@ class Cron
 						//TODO: Тут должна быть проверка, что скрипта не существует, вместо нее TRUE
 						if (TRUE && is_null($arRes['CODE']))
 						{
-							Logs::write2Log('Для cron задачи указано несуществующее имя скрипта и отвутствует PHP код.'
+							Logs::setError('Для cron задачи указано несуществующее имя скрипта и отвутствует PHP код.'
 								.'Задача #'.$arRes['ID'].' не может быть выполнена и будет деактивирована');
 							static::deactivateJob($arRes['ID']);
 							continue;
@@ -133,7 +136,10 @@ class Cron
 						}
 						catch (\Throwable $e)
 						{
-							Logs::write2Log('Возникла ошибка при попытке исполнения PHP кода задания #'.$arRes['ID'].'. Задание деактивировано');
+							Logs::setError(
+								'Возникла ошибка при попытке исполнения PHP кода задания #'.$arRes['ID'].'. Задание деактивировано',
+								array ('EXCEPTION'=>$e)
+							);
 							static::deactivateJob($arRes['ID']);
 							continue;
 						}
@@ -144,7 +150,7 @@ class Cron
 				$nextRun = static::parseCronExpression($arRes['CRON_EXPRESSION']);
 				if (!$nextRun)
 				{
-					Logs::write2Log('Возникла ошибка при планировании следующего выполнения задачи #'.$arRes['ID'].'. Задача деактивирована');
+					Logs::setError('Возникла ошибка при планировании следующего выполнения задачи #'.$arRes['ID'].'. Задача деактивирована');
 					static::deactivateJob($arRes['ID']);
 					continue;
 				}
