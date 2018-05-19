@@ -26,27 +26,22 @@ if (file_exists($_SERVER['DOCUMENT_ROOT'].'/shutdown'))
 	$bGoodStart = true;
 }
 
-for ($i=0; $i<7; $i++)
-{
-	echo 'Ждем '.($i+1)."...\n";
-	sleep(1);
-}
 exec('sudo ntpdate -u ntp.ubuntu.com',$out);
 echo implode("\n",$out)."\n";
+
+if (!$bGoodStart)
+{
+	\Ms\Core\Lib\Logs::setInfo('Система загружена после непредвиденного завершения работы.');
+}
+else
+{
+	\Ms\Core\Lib\Logs::setInfo('Система успешно загружена.');
+}
 
 define('MS_NO_CHECK_AGENTS',true);
 include_once ($_SERVER['DOCUMENT_ROOT']."/ms/core/prolog_before.php");
 
-if (!$bGoodStart)
-{
-	\Ms\Core\Lib\Logs::setInfo('Система загружена после непредвиденного завершения работы. Активация события OnStartUp');
-}
-else
-{
-	\Ms\Core\Lib\Logs::setInfo('Система успешно загружена. Активация события OnStartUp');
-}
-
-\Ms\Core\Lib\Events::runEvents('ms.dobrozhil','OnStartUp',array ($bGoodStart));
+\Ms\Dobrozhil\Lib\Cron::initOnStartUp($bGoodStart);
 
 if (file_exists($_SERVER['DOCUMENT_ROOT'].'/startup'))
 {

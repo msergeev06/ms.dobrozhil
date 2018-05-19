@@ -16,6 +16,7 @@ use Ms\Core\Lib\IO\Files;
 use Ms\Core\Lib\Logs;
 use Ms\Core\Entity\ErrorCollection;
 use Ms\Dobrozhil\Tables\CronTable;
+use Ms\Core\Lib\Events;
 
 class Cron
 {
@@ -53,6 +54,82 @@ class Cron
 	 * @var null|ErrorCollection
 	 */
 	private static $errorCollection = null;
+
+	/**
+	 * Инициирует событие OnStartUp, вызывается кроном при старте системы
+	 *
+	 * @param null|bool $bGoodStart Флаг запланированного перезапуска системы
+	 */
+	public static function initOnStartUp ($bGoodStart=false)
+	{
+		Logs::setInfo('Активация события OnStartUp');
+		if (!is_null($bGoodStart))
+		{
+			Events::runEvents('ms.dobrozhil','OnStartUp',array ($bGoodStart));
+		}
+		else
+		{
+			Events::runEvents('ms.dobrozhil','OnStartUp');
+		}
+	}
+
+	/**
+	 * Инициирует событие OnNewMinute, вызывается кроном каждую минуту
+	 */
+	public static function initOnNewMinute ()
+	{
+		Events::runEvents('ms.dobrozhil','OnNewMinute');
+	}
+
+	/**
+	 * Инициирует событие OnNewHour, вызывается кроном каждый час
+	 */
+	public static function initOnNewHour ()
+	{
+		Logs::setInfo('Запуск события OnNewHour');
+
+		Events::runEvents('ms.dobrozhil','OnNewHour');
+	}
+
+	/**
+	 * Инициирует событие OnNewDay, вызывается в начале каждого дня при запуске крона каждый час
+	 */
+	public static function initOnNewDay()
+	{
+		Logs::setInfo('Запуск события OnNewDay');
+
+		Events::runEvents('ms.dobrozhil','OnNewDay');
+	}
+
+	/**
+	 * Инициирует событие OnNewWeek, вызывается в начале каждой недели при запуске крона каждый час
+	 */
+	public static function initOnNewWeek ()
+	{
+		Logs::setInfo('Запуск события OnNewWeek');
+
+		Events::runEvents('ms.dobrozhil','OnNewWeek');
+	}
+
+	/**
+	 * Инициирует событие OnNewMonth, вызывается в начале месяца при запуске крона каждый час
+	 */
+	public static function initOnNewMonth()
+	{
+		Logs::setInfo('Запуск события OnNewMonth');
+
+		Events::runEvents('ms.dobrozhil','OnNewMonth');
+	}
+
+	/**
+	 * Инициирует событие OnNewYear, вызывается в начале года при запуске крона каждый час
+	 */
+	public static function initOnNewYear ()
+	{
+		Logs::setInfo('Запуск события OnNewYear');
+
+		Events::runEvents('ms.dobrozhil','OnNewYear');
+	}
 
 	/**
 	 * Каждую минуту проверяет необходимость выполнить запланированные задачи
