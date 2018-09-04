@@ -12,9 +12,27 @@ namespace Ms\Dobrozhil\Interfaces;
 
 interface CodeEditor
 {
-	public static function getCode($scriptName);
+	/**
+	 * Возвращает код скрипта
+	 *
+	 * @param string $scriptName Имя скрипта
+	 *
+	 * @return string|null
+	 */
+	public function getCode($scriptName);
 
-	public static function getName();
+	/**
+	 * Сохраняет код скрипта
+	 *
+	 * @param string $scriptName Имя скрипта
+	 * @param string $code Код
+	 *
+	 * @return bool
+	 */
+	public function saveCode($scriptName,$code='');
 
-	public static function runEditor($code=null);
+/*	public static function getName();
+
+	public static function runEditor($code=null);*/
+
 }

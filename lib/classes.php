@@ -13,6 +13,7 @@ namespace Ms\Dobrozhil\Lib;
 use Ms\Core\Entity\ErrorCollection;
 use Ms\Core\Lib\Loader;
 use Ms\Core\Lib\Modules;
+use Ms\Dobrozhil\Entity\Script;
 use Ms\Dobrozhil\Tables\ClassesTable;
 use Ms\Dobrozhil\Tables\ClassMethodsTable;
 use Ms\Dobrozhil\Tables\ClassPropertiesTable;
@@ -40,6 +41,17 @@ class Classes
 	 */
 	private static $errorCollection = null;
 
+	/**
+	 * @var array
+	 */
+	private static $arClassExists = array();
+
+	/**
+	 * @var array
+	 */
+	private static $arClassMethodsExists = array ();
+
+	//<editor-fold defaultstate="collapsed" desc="Check & isset methods">
 	/* CHECKS */
 
 	/**
@@ -57,24 +69,299 @@ class Classes
 	}
 
 	/**
-	 * Проверяет, существует ли указанный класс
+	 * Проверяет правильность имени свойства класса
 	 *
-	 * @param string $sClassName Имя класса
+	 * @param string $sPropertyName Имя свойства
 	 *
 	 * @return bool
 	 */
-	public static function checkClassExists ($sClassName)
+	public static function checkPropertyName ($sPropertyName)
 	{
-		$arRes = ClassesTable::getOne(
-			array(
-				'select' => 'NAME',
-				'filter' => array('NAME'=>$sClassName)
-			)
-		);
+		return static::checkName($sPropertyName);
+	}
+
+	/**
+	 * Проверяет правильность имени метода класса
+	 *
+	 * @param string $sMethodName Имя метода
+	 *
+	 * @return bool
+	 */
+	public static function checkMethodName ($sMethodName)
+	{
+		return static::checkName($sMethodName);
+	}
+	/**
+	 * Проверяет, существует ли указанный класс
+	 *
+	 * @param string $sClassName Имя класса
+	 * @param bool   $bUpdate    Флаг принудительного получения данных из БД
+	 *
+	 * @return bool
+	 */
+	public static function checkClassExists ($sClassName, $bUpdate=false)
+	{
+		//Проверяем имя класса
+		if (!isset($sClassName))
+		{
+			//'Не указано название класса'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_no_name'
+				),
+				'NO_NAME'
+			);
+			return false;
+		}
+		elseif (!static::checkName($sClassName))
+		{
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы',
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!isset(static::$arClassExists[$sClassName]) || $bUpdate)
+		{
+			$arRes = ClassesTable::getOne(
+				array(
+					'select' => 'NAME',
+					'filter' => array('NAME'=>$sClassName)
+				)
+			);
+
+			static::$arClassExists[$sClassName] = (!!$arRes);
+		}
+
+		return static::$arClassExists[$sClassName];
+	}
+
+	/**
+	 * Проверяет существование свойства класса
+	 *
+	 * @param string $sClassName    Имя класса
+	 * @param string $sPropertyName Имя свойства
+	 *
+	 * @return bool
+	 */
+	public static function checkClassPropertyExists ($sClassName,$sPropertyName)
+	{
+		//Проверяем имя класса
+		if (!isset($sClassName))
+		{
+			//'Не указано название класса'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_no_name'
+				),
+				'NO_NAME'
+			);
+			return false;
+		}
+		elseif (!static::checkName($sClassName))
+		{
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы',
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!static::checkClassExists($sClassName))
+		{
+			//'Класса с именем #CLASS_NAME# не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
+			return false;
+		}
+		elseif (!Classes::checkPropertyName($sPropertyName))
+		{
+			//'Имя свойства "#PROPERTY_NAME#" класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_property_name_wrong_symbols',
+					array (
+						'PROPERTY_NAME' => $sPropertyName,
+						'CLASS_NAME' => $sClassName
+					)
+				),
+				'PROPERTY_NAME_WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		else
+		{
+			$arRes = ClassPropertiesTable::getOne(
+				array(
+					'select' => 'NAME',
+					'filter' => array (
+						'NAME' => $sClassName.'.'.$sPropertyName
+					)
+				)
+			);
+
+			return (!!$arRes);
+		}
+	}
+
+	/**
+	 * Проверяет существования метода указанного класса
+	 *
+	 * @param string $sClassName Имя класса
+	 * @param string $sMethodName Имя метода
+	 * @param bool   $bUpdate Флаг принудтельной проверки в БД
+	 *
+	 * @return bool Возвращает TRUE, если метод существует, FALSE в противном случае
+	 */
+	public static function issetClassMethod ($sClassName, $sMethodName, $bUpdate=false)
+	{
+		if (!static::checkName($sClassName))
+		{
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!static::checkClassExists($sClassName))
+		{
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
+			return false;
+		}
+
+		if (!isset($sMethodName))
+		{
+			//'Имя метода не задано'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_no_name'
+				),
+				'METHOD_NO_NAME'
+			);
+			return false;
+		}
+		elseif (!static::checkName($sMethodName))
+		{
+			//'Имя метода "#METHOD_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_wrong_symbols',
+					array ('METHOD_NAME'=>$sMethodName)
+				),
+				'METHOD_WRONG_SYMBOLS'
+			);
+			return false;
+		}
+
+		if (!isset(static::$arClassMethodsExists[$sClassName.'.'.$sMethodName]) || $bUpdate)
+		{
+			$arRes = ClassMethodsTable::getOne(
+				array(
+					'select' => 'NAME',
+					'filter'=> array('NAME'=>$sClassName.'.'.$sMethodName)
+				)
+			);
+
+			static::$arClassMethodsExists[$sClassName.'.'.$sMethodName] = (!!$arRes);
+		}
+
+		return static::$arClassMethodsExists[$sClassName.'.'.$sMethodName];
+	}
+
+	/**
+	 * Проверяет существование заданного свойства в заданном классе
+	 *
+	 * @param string $sClassName    Имя класса
+	 * @param string $sPropertyName Имя свойства
+	 *
+	 * @return bool
+	 */
+	public static function issetClassProperty ($sClassName, $sPropertyName)
+	{
+		if (!static::checkName($sClassName))
+		{
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!static::checkClassExists($sClassName))
+		{
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
+			return false;
+		}
+
+		if (!static::checkPropertyName($sPropertyName))
+		{
+			//'Имя свойства "#PROPERTY_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_property_wrong_symbols',
+					array ('PROPERTY_NAME'=>$sPropertyName)
+				),
+				'PROPERTY_WRONG_SYMBOLS'
+			);
+			return false;
+		}
+
+		$arRes = ClassPropertiesTable::getOne(array(
+			'filter' => array('NAME'=>$sClassName.'.'.$sPropertyName)
+		));
 
 		return (!!$arRes);
 	}
 
+	//</editor-fold>
+
+	//<editor-fold defaultstate="collapsed" desc="Add methods">
 	/* ADD */
 
 	/**
@@ -84,29 +371,50 @@ class Classes
 	 *
 	 * @return bool
 	 */
-	public static function addNewClass(array $arParams)
+	public static function addNewClass (array $arParams)
 	{
+		//TODO: Переделать с массива на параметры
 		$arAdd = array();
 
 		//Проверяем имя класса
 		if (!isset($arParams['NAME']))
 		{
 			//'Не указано название класса'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_name'),'NO_NAME');
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_no_name'
+				),
+				'NO_NAME'
+			);
 			return false;
 		}
 		elseif (!static::checkName($arParams['NAME']))
 		{
-			//'Имя класса содержит запрещенные символы',
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы',
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$arParams['NAME'])
+				),
+				'WRONG_SYMBOLS'
+			);
 			return false;
 		}
 		else
 		{
 			if (static::checkClassExists($arParams['NAME']))
 			{
-				//'Класс с таким именем уже существует'
-				static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_exists'),'CLASS_EXISTS');
+				//'Класс с именем "#CLASS_NAME#" уже существует'
+				static::addError(
+					Loc::getModuleMessage(
+						'ms.dobrozhil',
+						'error_class_exists',
+						array ('CLASS_NAME'=>$arParams['NAME'])
+					),
+					'CLASS_EXISTS'
+				);
 				return false;
 			}
 			else
@@ -132,10 +440,30 @@ class Classes
 		{
 			$arAdd['PARENT_CLASS'] = null;
 		}
-		elseif (!preg_match(self::NAME_REGULAR,$arParams['PARENT_CLASS']))
+		elseif (!static::checkName($arParams['PARENT_CLASS']))
 		{
-			//'Имя родительского класса содержит недопустимые символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_parent_wring_symbols'),'PARENT_WRONG_SYMBOLS');
+			//'Имя родительского класса "#CLASS_NAME#" содержит недопустимые символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_parent_wring_symbols',
+					array('CLASS_NAME'=>$arParams['PARENT_CLASS'])
+				),
+				'PARENT_WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!static::checkClassExists($arParams['PARENT_CLASS']))
+		{
+			//'Родительского класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_parent_class_no_exists',
+					array ('CLASS_NAME'=>$arParams['PARENT_CLASS'])
+				),
+				'PARENT_NO_EXISTS'
+			);
 			return false;
 		}
 		else
@@ -149,14 +477,28 @@ class Classes
 		{
 			if (!Modules::checkModuleName($arParams['MODULE']))
 			{
-				//'Неверное имя модуля'
-				static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_module_name'),'WRONG_MODULE_NAME');
+				//'Неверное имя модуля "#MODULE_NAME#"'
+				static::addError(
+					Loc::getModuleMessage(
+						'ms.dobrozhil',
+						'error_wrong_module_name',
+						array('MODULE_NAME'=>$arParams['MODULE'])
+					),
+					'WRONG_MODULE_NAME'
+				);
 				return false;
 			}
 			elseif (!Loader::issetModule($arParams['MODULE']))
 			{
-				//'Указанный модуль не установлен'
-				static::addError(Loc::getModuleMessage('ms.dobrozhil','error_module_not_install'),'MODULE_NOT_INSTALL');
+				//'Модуль "#MODULE_NAME#" не установлен'
+				static::addError(
+					Loc::getModuleMessage(
+						'ms.dobrozhil',
+						'error_module_not_install',
+						array('MODULE_NAME'=>$arParams['MODULE'])
+					),
+					'MODULE_NOT_INSTALL'
+				);
 				return false;
 			}
 			else
@@ -164,8 +506,15 @@ class Classes
 				$arAdd['MODULE'] = $arParams['MODULE'];
 				if (!Loader::includeModule($arParams['MODULE']))
 				{
-					//'Ошибка подключения модуля #MODULE_NAME#'
-					static::addError(Loc::getModuleMessage('ms.dobrozhil','error_module_not_include',array ('MODULE_NAME'=>$arParams['MODULE'])),'MODULE_NOT_INCLUDE');
+					//'Ошибка подключения модуля "#MODULE_NAME#"'
+					static::addError(
+						Loc::getModuleMessage(
+							'ms.dobrozhil',
+							'error_module_not_include',
+							array ('MODULE_NAME'=>$arParams['MODULE'])
+						),
+						'MODULE_NOT_INCLUDE'
+					);
 					return false;
 				}
 
@@ -173,14 +522,27 @@ class Classes
 				if (!isset($arParams['NAMESPACE']))
 				{
 					//'Не указано имя класса'
-					static::addError(Loc::getModuleMessage('ms.dobrozhil','error_module_no_namespace'),'MODULE_NO_NAMESPACE');
+					static::addError(
+						Loc::getModuleMessage(
+							'ms.dobrozhil',
+							'error_module_no_namespace'
+						),
+						'MODULE_NO_NAMESPACE'
+					);
 					return false;
 				}
 				elseif (!Loader::classExists($arParams['NAMESPACE']))
 				{
-					//'Указанный класс не существует среди автозагружаемых классов модуля'
+					//'Класс "#CLASS_NAME#" не существует среди автозагружаемых классов модуля "#MODULE_NAME#"'
 					static::addError(
-						Loc::getModuleMessage('ms.dobrozhil','error_module_class_no_autoload'),
+						Loc::getModuleMessage(
+							'ms.dobrozhil',
+							'error_module_class_no_autoload',
+							array(
+								'CLASS_NAME'=>$arParams['NAMESPACE'],
+								'MODULE_NAME'=>$arParams['MODULE']
+							)
+						),
 						'MODULE_CLASS_NO_AUTOLOAD'
 					);
 					return false;
@@ -196,8 +558,15 @@ class Classes
 		$res = ClassesTable::add($arAdd);
 		if (!$res->getResult())
 		{
-			//'Ошибка добавления нового класса'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_no_add'),'NO_ADD');
+			//'Ошибка добавления нового класса "#CLASS_NAME#"'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_no_add',
+					array('CLASS_NAME'=>$arParams['NAME'])
+				),
+				'NO_ADD'
+			);
 			return false;
 		}
 
@@ -221,27 +590,54 @@ class Classes
 		$arAdd = array();
 		if (!static::checkName($sClassName))
 		{
-			//'Имя класса содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
 			return false;
 		}
 		elseif (!static::checkClassExists($sClassName))
 		{
-			//'Класса с таким именем не существует'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_no_exists'),'CLASS_NO_EXISTS');
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
 			return false;
 		}
 
 		if (!isset($sName))
 		{
 			//'Имя свойства не задано'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_no_name'),'PROPERTY_NO_NAME');
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_property_no_name'
+				),
+				'PROPERTY_NO_NAME'
+			);
 			return false;
 		}
-		elseif (!static::checkName($sName))
+		elseif (!static::checkPropertyName($sName))
 		{
-			//'Имя свойства содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
+			//'Имя свойства "#PROPERTY_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_property_wrong_symbols',
+					array('PROPERTY_NAME'=>$sName)
+				),
+				'PROPERTY_WRONG_SYMBOLS'
+			);
 			return false;
 		}
 		else
@@ -274,8 +670,15 @@ class Classes
 		$res = ClassPropertiesTable::add($arAdd);
 		if (!$res->getResult())
 		{
-			//'Не удалось добавить новое свойство'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_not_add'),'PROPERTY_NOT_ADD');
+			//'Не удалось добавить новое свойство "#PROPERTY_NAME#"'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_property_not_add',
+					array('PROPERTY_NAME'=>$sName)
+				),
+				'PROPERTY_NOT_ADD'
+			);
 			return false;
 		}
 
@@ -288,37 +691,63 @@ class Classes
 	 * @param string      $sClassName  Имя класса
 	 * @param string      $sMethodName Имя метода
 	 * @param null|string $sCode       Код метода
-	 * @param null|string $sScriptName Имя скрипта
 	 * @param null|string $sNote       Описание метода
 	 *
 	 * @return bool
 	 */
-	public static function addNewMethod ($sClassName, $sMethodName, $sCode=null, $sScriptName=null, $sNote=null)
+	public static function addNewMethod ($sClassName, $sMethodName, $sCode=null, $sNote=null)
 	{
 		$arAdd = array();
 		if (!static::checkName($sClassName))
 		{
-			//'Имя класса содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
 			return false;
 		}
 		elseif (!static::checkClassExists($sClassName))
 		{
-			//'Класса с таким именем не существует'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_no_exists'),'CLASS_NO_EXISTS');
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
 			return false;
 		}
 
 		if (!isset($sMethodName))
 		{
 			//'Имя метода не задано'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_method_no_name'),'METHOD_NO_NAME');
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_no_name'
+				),
+				'METHOD_NO_NAME'
+			);
 			return false;
 		}
 		elseif (!static::checkName($sMethodName))
 		{
-			//'Имя метода содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_method_wrong_symbols'),'METHOD_WRONG_SYMBOLS');
+			//'Имя метода "#METHOD_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_wrong_symbols',
+					array('METHOD_NAME'=>$sMethodName)
+				),
+				'METHOD_WRONG_SYMBOLS'
+			);
 			return false;
 		}
 		else
@@ -328,22 +757,14 @@ class Classes
 			$arAdd['CLASS_NAME'] = $sClassName;
 		}
 
+		define ('MS_DOBROZHIL_SYSTEM_SET',true);
+		Scripts::addScript($sClassName.'.'.$sMethodName,1);
 		if (!is_null($sCode))
 		{
-			$arAdd['CODE'] = $sCode;
-		}
-
-		if (!is_null($sScriptName))
-		{
-			if (!true) //Здесь будет проверка на существование скрипта с таким именем
+			$script = new Script($sClassName.'.'.$sMethodName);
+			if (!$script->isError())
 			{
-				//'Скрипта с таким именем не существует'
-				static::addError(Loc::getModuleMessage('ms.dobrozhil','error_script_no_exists'),'SCRIPT_NO_EXISTS');
-				return false;
-			}
-			else
-			{
-				$arAdd['SCRIPT_NAME'] = $sScriptName;
+				$script->saveCode($sCode);
 			}
 		}
 
@@ -355,7 +776,19 @@ class Classes
 		$res = ClassMethodsTable::add($arAdd);
 		if (!$res->getResult())
 		{
-			static::addError('Не удалось добавить новый метод класса','METHOD_NOT_ADD');
+			if (Scripts::issetScript($sClassName.'.'.$sMethodName))
+			{
+				Scripts::deleteScript($sClassName.'.'.$sMethodName);
+			}
+			//Не удалось добавить новый метод "#METHOD_NAME#" класса "#CLASS_NAME#"
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_no_add_method',
+					array ('METHOD_NAME'=>$sMethodName,'CLASS_NAME'=>$sClassName)
+				),
+				'METHOD_NOT_ADD'
+			);
 			return false;
 		}
 		else
@@ -363,7 +796,9 @@ class Classes
 			return true;
 		}
 	}
+	//</editor-fold>
 
+	//<editor-fold defaultstate="collapsed" desc="Get methods">
 	/* GETS */
 
 	/**
@@ -408,8 +843,28 @@ class Classes
 	{
 		if (!static::checkName($sClassName))
 		{
-			//'Имя класса содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!static::checkClassExists($sClassName))
+		{
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
 			return false;
 		}
 
@@ -442,8 +897,28 @@ class Classes
 	{
 		if (!static::checkName($sClassName))
 		{
-			//'Имя класса содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
+			return false;
+		}
+		elseif (!static::checkClassExists($sClassName))
+		{
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
 			return false;
 		}
 
@@ -470,14 +945,42 @@ class Classes
 	{
 		if (!static::checkName($sClassName))
 		{
-			//'Имя класса содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
 			return false;
 		}
-		if (!static::checkName($sPropertyName))
+		elseif (!static::checkClassExists($sClassName))
 		{
-			//'Имя свойства содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_property_wrong_symbols'),'PROPERTY_WRONG_SYMBOLS');
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
+			return false;
+		}
+
+		if (!static::checkPropertyName($sPropertyName))
+		{
+			//'Имя свойства "#PROPERTY_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_property_wrong_symbols',
+					array ('PROPERTY_NAME'=>$sPropertyName)
+				),
+				'PROPERTY_WRONG_SYMBOLS'
+			);
 			return false;
 		}
 
@@ -508,27 +1011,54 @@ class Classes
 	{
 		if (!static::checkName($sClassName))
 		{
-			//'Имя класса содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_wrong_symbols'),'WRONG_SYMBOLS');
+			//'Имя класса "#CLASS_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_wrong_symbols',
+					array('CLASS_NAME'=>$sClassName)
+				),
+				'WRONG_SYMBOLS'
+			);
 			return false;
 		}
 		elseif (!static::checkClassExists($sClassName))
 		{
-			//'Класса с таким именем не существует'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_class_no_exists'),'CLASS_NO_EXISTS');
+			//'Класса с именем "#CLASS_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_class_no_exists',
+					array ('CLASS_NAME'=>$sClassName)
+				),
+				'CLASS_NO_EXISTS'
+			);
 			return false;
 		}
 
 		if (!isset($sMethodName))
 		{
 			//'Имя метода не задано'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_method_no_name'),'METHOD_NO_NAME');
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_no_name'
+				),
+				'METHOD_NO_NAME'
+			);
 			return false;
 		}
-		elseif (!static::checkName($sMethodName))
+		elseif (!static::checkMethodName($sMethodName))
 		{
-			//'Имя метода содержит запрещенные символы'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_method_wrong_symbols'),'METHOD_WRONG_SYMBOLS');
+			//'Имя метода "#METHOD_NAME#" содержит запрещенные символы'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_wrong_symbols',
+					array ('METHOD_NAME'=>$sMethodName)
+				),
+				'METHOD_WRONG_SYMBOLS'
+			);
 			return false;
 		}
 
@@ -540,8 +1070,15 @@ class Classes
 		);
 		if (!$arRes)
 		{
-			//'Метод не существует'
-			static::addError(Loc::getModuleMessage('ms.dobrozhil','error_method_no_exists'),'METHOD_NO_EXISTS');
+			//'Метод "#METHOD_NAME#" не существует'
+			static::addError(
+				Loc::getModuleMessage(
+					'ms.dobrozhil',
+					'error_method_no_exists',
+					array ('METHOD_NAME'=>$sMethodName)
+				),
+				'METHOD_NO_EXISTS'
+			);
 			return false;
 		}
 		elseif (!is_array($arParams) && $arParams!='*')
@@ -564,8 +1101,10 @@ class Classes
 	{
 		return static::$errorCollection;
 	}
+	//</editor-fold>
 
-	/* PRIVATE */
+	//<editor-fold defaultstate="collapsed" desc="Protected methods">
+	/* PROTECTED */
 
 	/**
 	 * Добавляет новую ошибку в коллекцию
@@ -573,7 +1112,7 @@ class Classes
 	 * @param string $sMessage Сообщение об ошибке
 	 * @param string $sCode Код ошибки
 	 */
-	private static function addError($sMessage, $sCode=null)
+	protected static function addError($sMessage, $sCode=null)
 	{
 		if (is_null(static::$errorCollection))
 		{
@@ -581,4 +1120,5 @@ class Classes
 		}
 		static::$errorCollection->setError($sMessage,$sCode);
 	}
+	//</editor-fold>
 }

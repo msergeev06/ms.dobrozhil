@@ -35,32 +35,36 @@ class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 			Lib\TableHelper::primaryField(),
 			new Fields\StringField('NAME',array(
 				'required' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Полное имя свойства вида объект.свойство'
+				//'Полное имя свойства вида объект.свойство'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name')
 			)),
 			new Fields\StringField('TYPE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type') //'Тип значения свойства'
+				//'Тип значения свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type')
 			)),
 			new Fields\TextField('VALUE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value') //'Значение свойства'
+				//'Значение свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value')
 			)),
 			new Fields\DateTimeField('DATETIME',array(
 				'required' => true,
 				'default_insert' => new Date(),
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_datetime') //'Время установки свойства'
+				//'Время установки свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_datetime')
 			))
 		);
 	}
 
 	protected static function OnAfterAdd ($arAdd,$res)
 	{
-		static::setType($arAdd,$res);
+//		static::setType($arAdd,$res);
 	}
 
 	/**
 	 * @param $arAddUpdate
 	 * @param DBResult $res
 	 */
-	protected static function setType ($arAddUpdate, $res)
+/*	protected static function setType ($arAddUpdate, $res)
 	{
 		if (!is_null(static::$updateType) || !$res->getResult())
 		{
@@ -81,5 +85,5 @@ class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 		}
 
 		static::$updateType = null;
-	}
+	}*/
 }

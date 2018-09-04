@@ -9,5 +9,6 @@
 
 return array (
 	'table_title' => 'Категории скриптов',
-	'field_title' => 'Название категории'
+	'field_title' => 'Название категории',
+	'group_title' => 'Классы и объекты'
 );

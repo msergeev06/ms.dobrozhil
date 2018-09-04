@@ -19,4 +19,9 @@ $arReturn['OnNewWeek'] = array ();
 $arReturn['OnNewMonth'] = array ();
 $arReturn['OnNewYear'] = array ();
 
+$arReturn['OnBeforeGetObjectProperty'] = array ();
+$arReturn['OnAfterGetObjectProperty'] = array ();
+$arReturn['OnBeforeSetObjectProperty'] = array ();
+$arReturn['OnAfterSetObjectProperty'] = array ();
+
 return $arReturn;
