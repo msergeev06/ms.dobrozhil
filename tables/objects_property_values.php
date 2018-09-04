@@ -25,7 +25,8 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 
 	public static function getTableTitle ()
 	{
-		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //'Значение свойств объектов'
+		//'Значение свойств объектов'
+		return Loc::getModuleMessage('ms.dobrozhil','table_title');
 	}
 
 	protected static function getMap()
@@ -33,19 +34,23 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 		return array(
 			new Fields\StringField('NAME',array(
 				'primary' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Полное имя свойства вида объект.свойство'
+				//'Полное имя свойства вида объект.свойство'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name')
 			)),
 			new Fields\StringField('TYPE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type') //'Тип значения свойства'
+				//'Тип значения свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type')
 			)),
 			new Fields\TextField('VALUE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value') //'Значение свойства'
+				//'Значение свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value')
 			)),
 			new Fields\DateTimeField('UPDATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
 				'default_update' => new Date(),
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated') //'Время обновления свойства'
+				//'Время обновления свойства'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated')
 			))
 		);
 	}
@@ -55,37 +60,39 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 		return array(
 			array(
 				'NAME' => 'System.externalIP',
-				'TYPE' => 'STRING',
+				'TYPE' => 'S',
 				'VALUE' => '255.255.255.255'
 			),
 			array(
 				'NAME' => 'System.homeName',
-				'TYPE' => 'STRING',
-				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_home_name') //'Кузя'
+				'TYPE' => 'S',
+				//'Кузя'
+				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_home_name')
 			),
 			array(
 				'NAME' => 'System.lastSayMessage',
-				'TYPE' => 'STRING',
-				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_last_say_message') //'Первый запуск'
+				'TYPE' => 'S',
+				//'Первый запуск'
+				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_last_say_message')
 			),
 			array(
 				'NAME' => 'System.minAloudLevel',
-				'TYPE' => 'INT',
+				'TYPE' => 'N',
 				'VALUE' => 1
 			),
 			array(
 				'NAME' => 'System.networkStatus',
-				'TYPE' => 'STRING',
+				'TYPE' => 'S',
 				'VALUE' => 'green'
 			),
 			array(
 				'NAME' => 'System.somebodyHome',
-				'TYPE' => 'BOOL',
+				'TYPE' => 'B',
 				'VALUE' => 'Y'
 			),
 			array(
 				'NAME' => 'System.volumeLevel',
-				'TYPE' => 'INT',
+				'TYPE' => 'N',
 				'VALUE' => 100
 			)
 		);
@@ -93,10 +100,10 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 
 	protected static function OnAfterAdd ($arAdd,$res)
 	{
-		static::setType($arAdd,$res);
+//		static::setType($arAdd,$res);
 	}
 
-	protected static function setType ($arAddUpdate, $res)
+/*	protected static function setType ($arAddUpdate, $res)
 	{
 		if (!is_null(static::$updateType) || !$res->getResult())
 		{
@@ -117,5 +124,5 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 		}
 
 		static::$updateType = null;
-	}
+	}*/
 }

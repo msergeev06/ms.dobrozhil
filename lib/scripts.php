@@ -12,109 +12,69 @@ namespace Ms\Dobrozhil\Lib;
 
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib\Loader;
-use Ms\Core\Lib\Logs;
-use Ms\Dobrozhil\Interfaces\CodeEditor;
+use Ms\Dobrozhil\Entity\Script;
+use Ms\Dobrozhil\Tables\ScriptsCategoriesTable;
 use Ms\Dobrozhil\Tables\ScriptsTable;
-use Ms\Core\Entity\ErrorCollection;
+use Ms\Core\Lib\Loc;
+
+Loc::includeLocFile(__FILE__);
 
 class Scripts
 {
 	/**
-	 * @var null|ErrorCollection
+	 * Возвращает основные параметры скрипта с указанным именем из БД
+	 *
+	 * @param string $sScriptName Имя скрипта
+	 *
+	 * @return array|bool|string
 	 */
-	private static $errorCollection = null;
-
-	public static function runScript($name, $arParams=array())
+	public static function getScriptDb ($sScriptName)
 	{
-		$arScript = ScriptsTable::getOne(
+		return ScriptsTable::getOne(
 			array (
 				'select' => array (
 					'NAME',
 					'MODULE',
 					'CLASS',
-					'CODE',
-					'UPDATED'
+					'NOTE',
+					'CATEGORY_ID'
 				),
-				'filter' => array ('NAME'=>$name)
+				'filter' => array ('NAME'=>$sScriptName)
 			)
 		);
-		if (!$arScript)
+	}
+
+	/**
+	 * Запускает указанный скрипт с переданными параметрами
+	 * Использует объект скрипта для работы
+	 *
+	 * @param string $sScriptName Имя скрипта
+	 * @param array $arParams Массив дополнительных параметров скрипта
+	 *
+	 * @uses Script
+	 *
+	 * @return mixed|null
+	 */
+	public static function runScript($sScriptName, $arParams=array())
+	{
+		$obScript = new Script($sScriptName);
+		if (!$obScript->isError())
 		{
-			Logs::setWarning('Скприт '.$name.' не найден',array ('ERROR_CODE'=>'SCRIPT_NOT_EXISTS'),static::$errorCollection);
-			return NULL;
-		}
-		if ($arScript['MODULE']!='ms.dobrozhil')
-		{
-			if (!Loader::issetModule($arScript['MODULE']) || !Loader::includeModule($arScript['MODULE']))
-			{
-				Logs::setError(
-					'Ошибка исполнения скрипта '.$name.'. Требуемый модуль '.$arScript['MODULE'].' не установлен, либо возникла ошибка при подключении',
-					array ('ERROR_CODE'=>'ERROR_MODULE'),
-					static::$errorCollection
-				);
-				return NULL;
-			}
-			elseif (!Loader::classExists($arScript['CLASS']))
-			{
-				Logs::setError(
-					'Ошибка исполнения скрипта '.$name.'. Класс ('.$arScript['CLASS'].') модуля "'.$arScript['MODULE'].'" не найден',
-					array ('ERROR_CODE'=>'CLASS_NOT_EXISTS'),
-					static::$errorCollection
-				);
-				return NULL;
-			}
-			elseif (!($arScript['CLASS'] instanceof CodeEditor))
-			{
-				Logs::setError(
-					'Ошибка исполнения скрипта '.$name.'. Описанный класс ('.$arScript['CLASS'].') модуля "'.$arScript['MODULE'].'" не реализует интерфейс редактора кода',
-					array (),
-					static::$errorCollection
-				);
-				return NULL;
-			}
-			else
-			{
-				$arScript['CODE'] = call_user_func($arScript['CLASS'].'::getCode',$name);
-				if ($arScript['CODE']===false)
-				{
-					Logs::setError(
-						'Ошибка исполнения скрипта '.$name.'. Код не был получен из стороннего редактора',
-						array (),
-						static::$errorCollection
-					);
-					return NULL;
-				}
-			}
-		}
-		$arUpdate = array (
-			'UPDATED' => $arScript['UPDATED'],
-			'LAST_RUN' => new Date(),
-			'LAST_PARAMETERS' => $arParams
-		);
-		ScriptsTable::update($arScript['NAME'],$arUpdate);
-		try
-		{
-			$result = eval($arScript['CODE']);
-			if ($result === false)
-			{
-				Logs::setError(
-					'Ошибка выполнения скрипта '.$name.'. Произошла ошибка при исполнении кода',
-					array (),
-					static::$errorCollection
-				);
-				return NULL;
-			}
-			return $result;
-		}
-		catch (\Throwable $e)
-		{
-			Logs::setError(
-				'Ошибка исполнения кода скрипта '.$name,
-				array ('EXCEPTION'=>$e),
-				static::$errorCollection
+			$arUpdate = array (
+				'LAST_RUN' => new Date(),
+				'LAST_PARAMETERS' => $arParams
 			);
-			return NULL;
+
+			$result = $obScript->run($arParams);
+
+			if (!$obScript->isError())
+			{
+				ScriptsTable::update($sScriptName,$arUpdate);
+				return $result;
+			}
 		}
+
+		return NULL;
 	}
 
 	/**
@@ -126,46 +86,269 @@ class Scripts
 	 */
 	public static function issetScript($scriptName)
 	{
-		$arRes = ScriptsTable::getOne(array ('select'=>'NAME','filter'=>array ("NAME"=>$scriptName)));
+		$arRes = ScriptsTable::getOne(
+			array (
+				'select'=>'NAME',
+				'filter'=>array (
+					"NAME"=>$scriptName
+				)
+			)
+		);
 
 		return (!!$arRes);
 	}
 
 	/**
-	 * Удаляет скрипт с указанным именем
+	 * Удаляет скрипт с указанным именем, если он существует
 	 *
 	 * @param string $scriptName Имя скрипта
 	 *
-	 * @return \Ms\Core\Entity\Db\DBResult
+	 * @return bool|\Ms\Core\Entity\Db\DBResult
 	 */
 	public static function deleteScript ($scriptName)
 	{
-		return ScriptsTable::delete($scriptName,false);
-	}
-
-	/**
-	 * Возвращает список ошибок, возникших в ходе работы методов класса
-	 *
-	 * @return ErrorCollection|null
-	 */
-	public static function getErrors ()
-	{
-		return static::$errorCollection;
-	}
-
-	/**
-	 * Добавляет новую ошибку в коллекцию
-	 *
-	 * @param string $sMessage Сообщение об ошибке
-	 * @param string $sCode Код ошибки
-	 */
-	private static function addError($sMessage, $sCode=null)
-	{
-		if (is_null(static::$errorCollection))
+		if (static::issetScript($scriptName))
 		{
-			static::$errorCollection = new ErrorCollection();
+			//TODO: Добавить проверку возможности удаления скрипта из категории 1
+			return ScriptsTable::delete($scriptName,true);
 		}
-		static::$errorCollection->setError($sMessage,$sCode);
+
+		return false;
 	}
 
+	/**
+	 * Создает новый скрипт с указанными параметрами
+	 *
+	 * @param string $sName       Имя скрипта
+	 * @param int    $iCategoryID ID категории скрипта
+	 * @param string $sNote       Описание скрипта
+	 * @param string $sModule     Модуль редактора кода
+	 * @param string $sClass      Класс редактора кода
+	 *
+	 * @return \Ms\Core\Entity\Db\DBResult|bool
+	 */
+	public static function addScript ($sName, $iCategoryID=null, $sNote=null, $sModule=null, $sClass=null)
+	{
+		$arAdd = array();
+		if (!static::checkScriptName($sName))
+		{
+			//Имя скрипта содержит запрещенные символы
+			return false;
+		}
+		elseif (static::issetScript($sName))
+		{
+			//Скрипт с таким именем уже существует
+			return false;
+		}
+		$arAdd['NAME'] = $sName;
+		if (!is_null($iCategoryID))
+		{
+			if (!static::issetScriptCategoryByID((int)$iCategoryID))
+			{
+				//Категории ID: #ID# не существует
+				return false;
+			}
+			$arAdd['CATEGORY_ID'] = (int)$iCategoryID;
+			if ($arAdd['CATEGORY_ID']==1)
+			{
+				//Скрипты в категорию "Классы и объекта" может добавлять только система (не ошибка)
+				if (!defined('MS_DOBROZHIL_SYSTEM_SET') || !MS_DOBROZHIL_SYSTEM_SET)
+				{
+					$arAdd['CATEGORY_ID'] = 0;
+				}
+			}
+		}
+		if (!is_null($sNote) && strlen($sNote)>0)
+		{
+			$arAdd['NOTE'] = $sNote;
+		}
+		if (!is_null($sModule) || !is_null($sClass))
+		{
+			if (is_null($sModule))
+			{
+				//Имя модуля редактора кода не задано. При указании имени класса обязательно требуется указание имени модуля
+				return false;
+			}
+			elseif (is_null($sClass))
+			{
+				//Имя класса редактора кода не задано. При указании имени модуля обязательно требуется указание имени класса
+				return false;
+			}
+			else
+			{
+				if (!Loader::issetModule($sModule))
+				{
+					//Модуль "#MODULE_NAME#" не установлен
+					return false;
+				}
+				elseif (!Loader::includeModule($sModule))
+				{
+					//Ошибка подключения модуля "#MODULE_NAME#"
+					return false;
+				}
+				$arAdd['MODULE'] = $sModule;
+				if (!Loader::classExists($sClass))
+				{
+					//Класс "#CLASS_NAME#" модуля "#MODULE_NAME#" не обнаружен среди автозагружаемых классов.
+					return false;
+				}
+				$arAdd['CLASS'] = $sClass;
+			}
+		}
+
+		return ScriptsTable::add($arAdd);
+	}
+
+	/**
+	 * Проверяет имя скрипта на соответствие правилам именования
+	 *
+	 * @param string $sScriptName Имя скрипта
+	 *
+	 * @return bool
+	 */
+	public static function checkScriptName ($sScriptName)
+	{
+		if (strpos($sScriptName,'.')!==false)
+		{
+			list($first,$second)=explode('.',$sScriptName);
+
+			return (Classes::checkName($first) && Classes::checkName($second));
+		}
+		else
+		{
+			return Classes::checkName($sScriptName);
+		}
+	}
+
+	/**
+	 * Проверяет существование категории скриптов по ID
+	 *
+	 * @param int $categoryID ID категории
+	 *
+	 * @return bool
+	 */
+	public static function issetScriptCategoryByID ($categoryID)
+	{
+		if ((int)$categoryID <= 0) return false;
+
+		$arRes = ScriptsCategoriesTable::getOne(array(
+			'filter' => array ('ID'=>(int)$categoryID)
+		));
+
+		return (!!$arRes);
+	}
+
+	/**
+	 * Проверяет существование категории скриптов по его имени
+	 *
+	 * @param string $sCategoryName Имя категории
+	 *
+	 * @return bool
+	 */
+	public static function issetScriptCategoryByName ($sCategoryName)
+	{
+		$arRes = ScriptsCategoriesTable::getOne(array (
+			'filter' => array ('TITLE'=>$sCategoryName)
+		));
+
+		return (!!$arRes);
+	}
+
+	/**
+	 * Добавляет новую категорию, если ее не существует
+	 *
+	 * @param string $sCategoryName Имя категории
+	 *
+	 * @return bool|int
+	 */
+	public static function addNewCategory ($sCategoryName)
+	{
+		if (!static::issetScriptCategoryByName($sCategoryName))
+		{
+			$res = ScriptsCategoriesTable::add(
+				array (
+					'TITLE' => $sCategoryName
+				)
+			);
+			if ($res->getResult())
+			{
+				return $res->getInsertId();
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Возвращает имя категории скрипта по её ID или FALSE, если не найдена
+	 *
+	 * @param int $categoryID ID категории
+	 *
+	 * @return bool|string
+	 */
+	public static function getCategoryNameByID ($categoryID)
+	{
+		if ((int)$categoryID>0)
+		{
+			$arRes = ScriptsCategoriesTable::getOne(array (
+				'filter' => array ('ID'=>(int)$categoryID)
+			));
+			if (isset($arRes['TITLE']))
+			{
+				return $arRes['TITLE'];
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Возвращает ID категории по её имени, либо FALSE, если не найдена
+	 *
+	 * @param string $sCategoryName Имя категории
+	 *
+	 * @return bool|int
+	 */
+	public static function getCategoryIDByName ($sCategoryName)
+	{
+		$arRes = ScriptsCategoriesTable::getOne(array (
+			'filter' => array ('TITLE'=>$sCategoryName)
+		));
+		if (isset($arRes['ID']))
+		{
+			return (int)$arRes['ID'];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Удаляет категорию по её ID или имени
+	 *
+	 * @param int|string $mCategory ID или имя категории
+	 *
+	 * @return bool
+	 */
+	public static function deleteCategory ($mCategory)
+	{
+		if (is_numeric($mCategory) && static::issetScriptCategoryByID((int)$mCategory))
+		{
+			if ((int)$mCategory==1)
+			{
+				return false;//Категорию ID=1 удалить нельзя
+			}
+			$res = ScriptsCategoriesTable::delete((int)$mCategory,true);
+		}
+		elseif (!is_numeric($mCategory) && static::issetScriptCategoryByName($mCategory))
+		{
+			$res = ScriptsCategoriesTable::delete(static::getCategoryIDByName($mCategory),true);
+		}
+
+		if (isset($res) && $res->getResult())
+		{
+			return true;
+		}
+
+		return false;
+	}
 }

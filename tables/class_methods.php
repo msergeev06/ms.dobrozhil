@@ -21,7 +21,8 @@ class ClassMethodsTable extends Lib\DataManager
 {
 	public static function getTableTitle ()
 	{
-		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //Методы классов
+		//Методы классов
+		return Loc::getModuleMessage('ms.dobrozhil','table_title');
 	}
 
 	public static function getMap ()
@@ -29,44 +30,54 @@ class ClassMethodsTable extends Lib\DataManager
 		return array(
 			new Fields\StringField('NAME',array(
 				'primary' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'Полное имя метода вида класс.метод'
+				//'Полное имя метода вида класс.метод'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name')
 			)),
 			new Fields\StringField('METHOD_NAME',array(
 				'required' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_method_name') //'Имя метода без имени класса'
+				//'Имя метода без имени класса'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_method_name')
 			)),
 			new Fields\StringField('CLASS_NAME',array(
 				'required' => true,
 				'link' => ClassesTable::getTableName().'.NAME',
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_class_name') //'Имя класса без имени метода'
+				//'Имя класса без имени метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_class_name')
 			)),
-			new Fields\StringField('NOTE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','filed_note') //'Краткое описание метода'
+			new Fields\TextField('NOTE',array(
+				//'Краткое описание метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_note')
 			)),
-			new Fields\StringField('SCRIPT_NAME',array(
+/*			new Fields\StringField('SCRIPT_NAME',array(
 				'link' => ScriptsTable::getTableName().'.NAME',
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name') //'Имя скрипта, вместо кода метода'
+				//'Имя скрипта, вместо кода метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name')
 			)),
 			new Fields\TextField('CODE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code') //'Код метода'
-			)),
+				//'Код метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code')
+			)),*/
 			new Fields\TextField('LAST_PARAMETERS',array(
 				'serialized' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_last_parameters') //'Массив значений параметров последнего запуска'
+				//'Массив значений параметров последнего запуска'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_last_parameters')
 			)),
 			new Fields\DateTimeField('LAST_RUN',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_last_run') //'Время последнего запуска метода'
+				//'Время последнего запуска метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_last_run')
 			)),
 			new Fields\DateTimeField('CREATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_created') //'Время создания метода'
+				//'Время создания метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_created')
 			)),
 			new Fields\DateTimeField('UPDATED',array(
 				'required' => true,
 				'default_insert' => new Date(),
-				'default_update' => new Date(),
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated') //'Время обновления метода'
+//				'default_update' => new Date(),
+				//'Время обновления метода'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated')
 			))
 		);
 	}
@@ -78,79 +89,67 @@ class ClassMethodsTable extends Lib\DataManager
 				'NAME' => 'CSystem.setMaxVolume',
 				'METHOD_NAME' => 'setMaxVolume',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_set_max_volume'), //'Устанавливает максимальную громкость'
-				'CODE' => '$this->volumeLevel = 100;'
+				//'Устанавливает максимальную громкость'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_set_max_volume'),
 			),
 			array(
 				'NAME' => 'CSystem.setMute',
 				'METHOD_NAME' => 'setMute',
 				'CLASS_NAME' => 'CSystem',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_set_mute'), //'Устанавливает громкость на 0'
-				'CODE' => '$this->volumeLevel = 0;'
+				//'Устанавливает громкость на 0'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_set_mute'),
 			),
 
 			array(
 				'NAME' => 'COperationModes.activateMode',
 				'METHOD_NAME' => 'activateMode',
 				'CLASS_NAME' => 'COperationModes',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_activate_mode'), //'Активирует режим'
-				'CODE' => '$this->isActive = true;'
+				//'Активирует режим'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_activate_mode'),
 			),
 			array(
 				'NAME' => 'COperationModes.deactivateMode',
 				'METHOD_NAME' => 'deactivateMode',
 				'CLASS_NAME' => 'COperationModes',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_deactivate_mode'), //'Деактивирует режим'
-				'CODE' => '$this->isActive = false;'
+				//'Деактивирует режим'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_deactivate_mode'),
 			),
 			array(
 				'NAME' => 'COperationModes.onChange_isActive',
 				'METHOD_NAME' => 'onChange_isActive',
 				'CLASS_NAME' => 'COperationModes',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_on_change_is_active'), //'Срабатывает при изменении свойства isActive'
-				'CODE' => '$this->isActive = false;'
+				//'Срабатывает при изменении свойства isActive'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_operation_modes_on_change_is_active'),
 			),
 
 			array(
 				'NAME' => 'CSystemStates.setGreen',
 				'METHOD_NAME' => 'setGreen',
 				'CLASS_NAME' => 'CSystemStates',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_green'), //'Устанавливает состояние green'
-				'CODE' => 'if($this->state != "green") $this->state = "green";'
+				//'Устанавливает состояние green'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_green'),
 			),
 			array(
 				'NAME' => 'CSystemStates.setYellow',
 				'METHOD_NAME' => 'setYellow',
 				'CLASS_NAME' => 'CSystemStates',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_yellow'), //'Устанавливает состояние yellow'
-				'CODE' => 'if($this->state != "yellow") $this->state = "yellow";'
+				//'Устанавливает состояние yellow'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_yellow'),
 			),
 			array(
 				'NAME' => 'CSystemStates.setRed',
 				'METHOD_NAME' => 'setRed',
 				'CLASS_NAME' => 'CSystemStates',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_red'), //'Устанавливает состояние red'
-				'CODE' => 'if($this->state != "red") $this->state = "red";'
+				//'Устанавливает состояние red'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_set_state_red'),
 			),
 			array(
 				'NAME' => 'CSystemStates.onChange_state',
 				'METHOD_NAME' => 'onChange_state',
 				'CLASS_NAME' => 'CSystemStates',
-				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_on_change_state'), //'Вызывается при изменении состояния'
-				'CODE' => 'switch ($this->state)
-{
-   case "green":
-      say($this->textSayGreen, $this->sayLevelGreen,"SystemStates");
-      break;
-   case "green":
-      say($this->textSayYellow, $this->sayLevelYellow,"SystemStates");
-      break;
-   case "green":
-      say($this->textSayRed, $this->sayLevelRed,"SystemStates");
-      break;
-}
-'
-			),
+				//'Вызывается при изменении состояния'
+				'NOTE' => Loc::getModuleMessage('ms.dobrozhil','note_state_on_change_state'),
+			)
 		);
 	}
 }

@@ -21,6 +21,7 @@ class ScriptsCategoriesTable extends DataManager
 {
 	public static function getTableTitle ()
 	{
+		//'Категории скриптов'
 		return Loc::getModuleMessage('ms.dobrozhil','table_title');
 	}
 
@@ -39,10 +40,20 @@ class ScriptsCategoriesTable extends DataManager
 			TableHelper::primaryField(),
 			new Fields\StringField('TITLE',array (
 				'required' => true,
+				//'Название категории'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_title')
 			))
 		);
 	}
 
-
+	public static function getValues ()
+	{
+		return array (
+			array(
+				'ID' => 1,
+				//'Классы и объекты'
+				'TITLE' => Loc::getModuleMessage('ms.dobrozhil','group_title')
+			)
+		);
+	}
 }

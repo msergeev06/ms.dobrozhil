@@ -17,6 +17,12 @@ $namespaceRoot = 'Ms\Dobrozhil';
 
 Loader::AddAutoLoadClasses(
 	array(
+		/** Entity */
+		$namespaceRoot.'\Entity\Script'    => $moduleRoot.'/entity/script.php',
+
+		/** Entity\Code */
+		$namespaceRoot.'\Entity\Code\TextEditor'        => $moduleRoot.'/entity/code/text_editor.php',
+
 		/** Entity\Objects */
 		$namespaceRoot.'\Entity\Objects\Base'           => $moduleRoot.'/entity/objects/base.php',
 		$namespaceRoot.'\Entity\Objects\Users'          => $moduleRoot.'/entity/objects/users.php',
@@ -33,6 +39,7 @@ Loader::AddAutoLoadClasses(
 		$namespaceRoot.'\Entity\Types\TypeString'       => $moduleRoot.'/entity/types/type_string.php',
 		$namespaceRoot.'\Entity\Types\TypeTime'         => $moduleRoot.'/entity/types/type_time.php',
 		$namespaceRoot.'\Entity\Types\TypeTimestamp'    => $moduleRoot.'/entity/types/type_timestamp.php',
+
 		/** Interfaces */
 		$namespaceRoot.'\Interfaces\TypeProcessing' => $moduleRoot.'/interfaces/type_processing.php',
 		/** Lib */
@@ -52,7 +59,8 @@ Loader::AddAutoLoadClasses(
 		$namespaceRoot.'\Tables\ObjectsPropertyValuesHistoryTable'  => $moduleRoot.'/tables/objects_property_values_history.php',
 		$namespaceRoot.'\Tables\SchedulerTable'                     => $moduleRoot.'/tables/scheduler.php',
 		$namespaceRoot.'\Tables\ScriptsTable'                       => $moduleRoot.'/tables/scripts.php',
-		$namespaceRoot.'\Tables\ScriptsCategoriesTable'             => $moduleRoot.'/tables/scripts_categories.php'
+		$namespaceRoot.'\Tables\ScriptsCategoriesTable'             => $moduleRoot.'/tables/scripts_categories.php',
+		$namespaceRoot.'\Tables\TextEditorCodeTable'                => $moduleRoot.'/tables/text_editor_code.php'
 	)
 );
 
