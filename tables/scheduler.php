@@ -20,7 +20,8 @@ class SchedulerTable extends DataManager
 {
 	public static function getTableTitle ()
 	{
-		return Loc::getModuleMessage('ms.dobrozhil','table_title'); //Планировщик действий
+		//Планировщик действий
+		return Loc::getModuleMessage('ms.dobrozhil','table_title');
 	}
 
 	protected static function getMap ()
@@ -28,30 +29,37 @@ class SchedulerTable extends DataManager
 		return array (
 			new Fields\StringField('NAME',array (
 				'primary' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name') //'ID запланированной задачи'
+				//'ID запланированной задачи'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name')
 			)),
 			new Fields\StringField('SCRIPT_NAME',array (
 				'link' => ScriptsTable::getTableName().'.NAME',
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name') //Имя скрипта, вместо PHP кода
+				//Имя скрипта, вместо PHP кода
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name')
 			)),
 			new Fields\TextField('CODE',array (
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code') //'PHP код задачи'
+				//'PHP код задачи'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code')
 			)),
 			new Fields\DateTimeField('RUNTIME',array(
 				'required' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_runtime') //'Запланированное время запуска задачи'
+				//'Запланированное время запуска задачи'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_runtime')
 			)),
 			new Fields\DateTimeField('EXPIRE',array(
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_expire') //'Время истечения задачи'
+				//'Время истечения задачи'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_expire')
 			)),
 			new Fields\BooleanField('PROCESSED',array (
 				'required' => true,
 				'default_create' => false,
 				'default_insert' => false,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_processed') //'Флаг исполнения задачи'
+				//'Флаг исполнения задачи'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_processed')
 			)),
 			new Fields\DateTimeField('STARTED',array (
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_started') //'Фактическое время запуска задачи'
+				//'Фактическое время запуска задачи'
+				'title' => Loc::getModuleMessage('ms.dobrozhil','field_started')
 			))
 		);
 	}
