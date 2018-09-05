@@ -252,26 +252,7 @@ class Base
 	 */
 	public function __debugInfo()
 	{
-		$arReturn  = get_object_vars($this);
-		if (isset($arReturn['_arPropertyValues']))
-		{
-			unset($arReturn['_arPropertyValues']);
-		}
-		if (isset($arReturn['_arLastMethodName']))
-		{
-			unset($arReturn['_arLastMethodName']);
-		}
-		if (isset($arReturn['_arLastMethodParams']))
-		{
-			unset($arReturn['_arLastMethodParams']);
-		}
-		$allProp = Objects::getAllProperties($this->_objectName);
-		if ($allProp && !empty($allProp))
-		{
-			$arReturn = array_merge($arReturn,$allProp);
-		}
-
-		return $arReturn;
+		return $this->getAllProperties();
 	}
 
 	/**
@@ -302,7 +283,7 @@ class Base
 	{
 		if (is_null($className))
 		{
-			$this->_className;
+			$className = $this->_className;
 		}
 
 		$this->onCall ($methodName, $arParams);
@@ -381,6 +362,36 @@ class Base
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="Gets methods">
+
+	/**
+	 * Возвращает массив со всеми свойствами объекта и их значениями
+	 *
+	 * @return array
+	 */
+	public function getAllProperties ()
+	{
+		$arReturn = get_object_vars($this);
+		if (isset($arReturn['_arPropertyValues']) || is_null($arReturn['_arPropertyValues']))
+		{
+			unset($arReturn['_arPropertyValues']);
+		}
+		if (isset($arReturn['_arLastMethodName']) || is_null($arReturn['_arLastMethodName']))
+		{
+			unset($arReturn['_arLastMethodName']);
+		}
+		if (isset($arReturn['_arLastMethodParams']) || is_null($arReturn['_arLastMethodParams']))
+		{
+			unset($arReturn['_arLastMethodParams']);
+		}
+		$allProp = Objects::getAllProperties($this->_objectName);
+		if ($allProp && !empty($allProp))
+		{
+			$arReturn = array_merge($arReturn,$allProp);
+		}
+
+		return $arReturn;
+	}
+
 	/**
 	 * Возвращает значение указанного свойства
 	 *
@@ -496,7 +507,7 @@ class Base
 		else
 		{
 			$parentClass = Classes::getClassParams($sClassName,'PARENT_CLASS');
-			if ($parentClass !== false)
+			if ($parentClass !== false && !is_null($parentClass))
 			{
 				return $this->getScriptNameArray($parentClass,$sMethodName);
 			}

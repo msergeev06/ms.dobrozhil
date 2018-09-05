@@ -825,7 +825,11 @@ class Classes
 				break;
 			}
 
-			$arParentsList[] = $sClassName = $arRes['PARENT_CLASS'];
+			if (!in_array($arRes['PARENT_CLASS'],$arParentsList))
+			{
+				$arParentsList[] = $arRes['PARENT_CLASS'];
+			}
+			$sClassName = $arRes['PARENT_CLASS'];
 		}
 
 		return array_reverse($arParentsList);

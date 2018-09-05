@@ -284,7 +284,7 @@ class Objects
 	 */
 	public static function getObject($sObjectName)
 	{
-		if (!static::checkObjectName($sObjectName))
+		if (!static::checkName($sObjectName))
 		{
 			//'Имя объекта содержит запрещенные символы'
 			static::addError(
@@ -296,7 +296,7 @@ class Objects
 			);
 			return false;
 		}
-		elseif (!static::checkObjectExists($sObjectName))
+		elseif (!static::checkExists($sObjectName))
 		{
 			//'Объект с заданным именем не был найден'
 			static::addError(
@@ -309,7 +309,7 @@ class Objects
 			return false;
 		}
 
-		if (!$className = static::getClassByObject($sObjectName))
+		if (!$arClass = static::getClassByObject($sObjectName))
 		{
 			//'Не удалось определить класс объекта'
 			static::addError(
@@ -320,6 +320,10 @@ class Objects
 				'OBJECT_CLASS_NOT_FOUND'
 			);
 			return false;
+		}
+		else
+		{
+			$className = $arClass['CLASS_NAME'];
 		}
 
 		$parentsList = Classes::getParentsList($className);
@@ -339,7 +343,7 @@ class Objects
 		$parentsList = array_reverse($parentsList);
 		foreach ($parentsList as $ar_parent)
 		{
-			$parentParams = Classes::getClassParams($ar_parent['CLASS_NAME']);
+			$parentParams = Classes::getClassParams($ar_parent);
 			//TODO: Протестировать родительские программные классы
 			if (!is_null($parentParams['NAMESPACE']))
 			{
@@ -432,7 +436,7 @@ class Objects
 	 */
 	public static function getClassByObject($sObjectName, $arParams=array())
 	{
-		if (!static::checkObjectName($sObjectName))
+		if (!static::checkName($sObjectName))
 		{
 			//'Имя объекта содержит запрещенные символы'
 			static::addError(
