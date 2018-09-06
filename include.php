@@ -45,6 +45,8 @@ Loader::AddAutoLoadClasses(
 		/** Lib */
 		$namespaceRoot.'\Lib\Classes'   => $moduleRoot.'/lib/classes.php',
 		$namespaceRoot.'\Lib\Cron'      => $moduleRoot.'/lib/cron.php',
+		$namespaceRoot.'\Lib\Handlers'  => $moduleRoot.'/lib/handlers.php',
+		$namespaceRoot.'\Lib\Main'      => $moduleRoot.'/lib/main.php',
 		$namespaceRoot.'\Lib\Objects'   => $moduleRoot.'/lib/objects.php',
 		$namespaceRoot.'\Lib\Scheduler' => $moduleRoot.'/lib/scheduler.php',
 		$namespaceRoot.'\Lib\Scripts'   => $moduleRoot.'/lib/scripts.php',

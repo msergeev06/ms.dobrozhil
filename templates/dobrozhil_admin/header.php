@@ -90,7 +90,11 @@ $USER = $application->getUser();
 		<div id="console_output" style="margin-left:15px">&nbsp;</div>
 	</div>
 	<div class="row">
-		<div class="left-menu col-md-3 sidebar" style="vertical-align:top;background-color: #f5f5f5;">
+		<?\Ms\Core\Entity\Application::getInstance()->includeComponent(
+			'ms:dobrozhil.admin.menu.main',
+			''
+		);?>
+<?/*		<div class="left-menu col-md-3 sidebar" style="vertical-align:top;background-color: #f5f5f5;">
 			<?if($USER->isAdmin()):?>
 				<ul class="nav nav-sidebar">
 					<?//<li class="active"><a href="#">Overview</a></li>?>
@@ -156,5 +160,6 @@ $USER = $application->getUser();
 				</ul>
 			<?endif;?>
 		</div>
+*/?>
 		<div class="content col-md-9" style="vertical-align:top;">
 

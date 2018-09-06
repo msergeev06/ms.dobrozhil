@@ -24,4 +24,6 @@ $arReturn['OnAfterGetObjectProperty'] = array ();
 $arReturn['OnBeforeSetObjectProperty'] = array ();
 $arReturn['OnAfterSetObjectProperty'] = array ();
 
+$arReturn['OnBuildAdminMainMenu'] = array ();
+
 return $arReturn;
