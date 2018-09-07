@@ -1107,6 +1107,11 @@ class Classes
 	}
 	//</editor-fold>
 
+	public static function delete ($sClassName, $bConfirm=false)
+	{
+		//TODO: Сделать удаление классов
+	}
+
 	//<editor-fold defaultstate="collapsed" desc="Protected methods">
 	/* PROTECTED */
 

@@ -45,6 +45,11 @@ class Main
 		return $arReturn;
 	}
 
+	/**
+	 * Возвращает массив с параметрами основных разделов меню
+	 *
+	 * @return array
+	 */
 	public static function getGeneralAdminMenuArray()
 	{
 		return array (
@@ -56,6 +61,13 @@ class Main
 		);
 	}
 
+	/**
+	 * Проверяет правильность указанной группы меню
+	 *
+	 * @param string $section Код группы меню
+	 *
+	 * @return bool
+	 */
 	public static function checkSectionMenu ($section)
 	{
 		if (
@@ -71,6 +83,15 @@ class Main
 		return FALSE;
 	}
 
+	/**
+	 * Проверяет, можно ли показывать указанному пользователю тот или иной пункт меню
+	 *
+	 * @param string    $section Код группы меню
+	 * @param string    $item    Код элемента меню
+	 * @param User|NULL $user    Объект пользователя
+	 *
+	 * @return bool
+	 */
 	public static function checkShowMenu ($section, $item, User $user=null)
 	{
 		if (is_null($user))
