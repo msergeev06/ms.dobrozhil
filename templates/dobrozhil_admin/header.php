@@ -65,10 +65,14 @@ $USER = $application->getUser();
 		<a class="navbar-brand" href="/ms/admin/" style="padding:8px"><span class="h3"><img width="40" height="40" src="<?=SITE_TEMPLATE_PATH.'/images/logo.jpg'?>" border="0" align="absmiddle" class="img-circle"> Доброжил</span></a>
 	</div>
 	<div class="collapse navbar-collapse" id="responsive-menu">
-        <? $application->includeComponent('ms:dobrozhil.admin.menu.top',''); ?>
-		<form class="navbar-form navbar-right" method="POST">
-			<input type="text" class="form-control" placeholder="Найти...">
-		</form>
+        <?$application->includeComponent(
+                'ms:dobrozhil.admin.menu.top',
+                ''
+        );?>
+        <?$application->includeComponent(
+                'ms:dobrozhil.admin.search.form',
+                ''
+        );?>
 	</div>
 </div>
 
