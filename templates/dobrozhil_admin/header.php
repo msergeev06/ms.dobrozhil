@@ -17,43 +17,61 @@ $USER = $application->getUser();
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation" style="z-index:1">
+
+<?/*<div class="navbar navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Доброжил</a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/"><i class="glyphicon glyphicon-home"></i> Главная</a></li>
+				<li><a href="/menu.php"><i class="glyphicon glyphicon-th-list"></i> Меню</a></li>
+				<li><a href="#"><i class="glyphicon glyphicon-flash"></i>Консоль</a></li>
+				<?if($USER->isAuthorise()):?>
+					<li>
+						<a href="/ms/admin/auth.php?act=logout">
+							<i class="glyphicon glyphicon-log-out"></i>&nbsp;
+							<?=($USER->getParam('propFullName')!='')?'('.$USER->getParam('propFullName').') ':''?>Выйти</a>
+					</li>
+				<?else:?>
+					<li>
+						<a href="/ms/admin/auth.php?act=login"><i class="glyphicon glyphicon-log-in"></i> Войти</a>
+					</li>
+				<?endif;?>
+			</ul>
+			<form class="navbar-form navbar-right">
+				<input type="text" class="form-control" placeholder="Найти...">
+			</form>
+		</div>
+	</div>
+</div>*/?>
+
+
+<div class="navbar navbar-default" role="navigation" style="z-index:1">
 	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="sr-only">Toggle</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
 		<a class="navbar-brand" href="/ms/admin/" style="padding:8px"><span class="h3"><img width="40" height="40" src="<?=SITE_TEMPLATE_PATH.'/images/logo.jpg'?>" border="0" align="absmiddle" class="img-circle"> Доброжил</span></a>
 	</div>
 	<div class="collapse navbar-collapse" id="responsive-menu">
-		<ul class="nav navbar-nav navbar-right">
-			<li>
-				<a href="/"><i class="glyphicon glyphicon-home"></i> Главная</a>
-			</li>
-			<li>
-				<a href="/menu.php" target="_blank"><i class="glyphicon glyphicon-th-list"></i> Меню</a>
-			</li>
-			<li>
-				<a href="#" <?//onclick="$(&quot;#console&quot;).toggle();return false;"?>><i class="glyphicon glyphicon-flash"></i> Console</a>
-			</li>
-			<?/*
-				<li>
-					<a href="<?=$pathAdmin?>"><i class="glyphicon glyphicon-dashboard"></i> X-Ray</a>
-				</li>
-				<li>
-					<a href="#" <?//onclick="return openModalTWindow('tdWiki', 'Wiki', '/panel/popup/app_tdwiki.html', 1000, 800)"?>><i class="glyphicon glyphicon-globe"></i> Wiki</a>
-				</li>
-				*/?>
-			<?if($USER->isAuthorise()):?>
-				<li>
-					<a href="/ms/admin/auth.php?act=logout"><i class="glyphicon glyphicon-log-out"></i>&nbsp;(<?=$USER->getParam('propFullName')?>) Выйти</a>
-				</li>
-			<?else:?>
-				<li>
-					<a href="/ms/admin/auth.php?act=login"><i class="glyphicon glyphicon-log-in"></i> Войти</a>
-				</li>
-			<?endif;?>
-			<li>&nbsp;&nbsp;</li>
-
-		</ul>
+        <? $application->includeComponent('ms:dobrozhil.admin.menu.top',''); ?>
+		<form class="navbar-form navbar-right" method="POST">
+			<input type="text" class="form-control" placeholder="Найти...">
+		</form>
 	</div>
-</nav>
+</div>
+
 <div class="container-fluid">
 	<div id="console" style="display:none">
 		<script language="javascript">
@@ -90,76 +108,9 @@ $USER = $application->getUser();
 		<div id="console_output" style="margin-left:15px">&nbsp;</div>
 	</div>
 	<div class="row">
-		<?\Ms\Core\Entity\Application::getInstance()->includeComponent(
+		<?$application->includeComponent(
 			'ms:dobrozhil.admin.menu.main',
 			''
 		);?>
-<?/*		<div class="left-menu col-md-3 sidebar" style="vertical-align:top;background-color: #f5f5f5;">
-			<?if($USER->isAdmin()):?>
-				<ul class="nav nav-sidebar">
-					<?//<li class="active"><a href="#">Overview</a></li>?>
-					<li class="nav-header"><a href="#">Объекты</a></li>
-					<li class="menu-child menu-objects"><a href="#">Меню управления</a></li>
-					<li class="menu-child menu-objects"><a href="/ms/admin/objects/">Объекты</a></li>
-					<li class="menu-child menu-objects"><a href="/ms/admin/patterns/">Шаблоны поведения</a></li>
-					<li class="menu-child menu-objects"><a href="#">Сцены</a></li>
-					<li class="menu-child menu-objects"><a href="/ms/admin/scripts/">Сценарии</a></li>
-					<li class="menu-child menu-objects"><a href="/ms/admin/webvars/">Веб-переменные</a></li>
-				</ul>
-				<ul class="nav nav-sidebar">
-					<li class="nav-header" id="menu-gadjet"><a href="#">Устройства</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">Bluetooth-устройства</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">ModBus</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">MQTT</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">1-Wire</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">Устройства Online</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">SNMP</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">USB-устройства</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">Папки</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">Z-Wave</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">KNX</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">MegaD</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">Noolite</a></li>
-					<li class="menu-child menu-gadjet"><a href="#">Orvibo</a></li>
-				</ul>
-				<ul class="nav nav-sidebar">
-					<li class="nav-header" id="menu-software"><a href="#">Приложения</a></li>
-					<li class="menu-child menu-software"><a href="#">Календарь</a></li>
-					<li class="menu-child menu-software"><a href="#">GPS-трекер</a></li>
-					<li class="menu-child menu-software"><a href="#">Медиа</a></li>
-					<li class="menu-child menu-software"><a href="#">Плеер</a></li>
-					<li class="menu-child menu-software"><a href="#">Продукты</a></li>
-					<li class="menu-child menu-software"><a href="#">Цитаты</a></li>
-					<li class="menu-child menu-software"><a href="#">Присл. ссылки</a></li>
-					<li class="menu-child menu-software"><a href="#">Блокнот</a></li>
-					<li class="menu-child menu-software"><a href="#">Каналы RSS</a></li>
-					<li class="menu-child menu-software"><a href="#">Radio 101.Ru</a></li>
-					<li class="menu-child menu-software"><a href="#">Telegram</a></li>
-					<li class="menu-child menu-software"><a href="#">Yandex TTS</a></li>
-					<li class="menu-child menu-software"><a href="#">Погода от OpenWeatherMap</a></li>
-				</ul>
-				<ul class="nav nav-sidebar">
-					<li class="nav-header" id="menu-setup"><a href="#">Установки</a></li>
-					<li class="menu-child menu-setup"><a href="#">Домашние страницы</a></li>
-					<li class="menu-child menu-setup"><a href="/ms/admin/locations/">Расположение</a></li>
-					<li class="menu-child menu-setup"><a href="#">Мои блоки</a></li>
-					<li class="menu-child menu-setup"><a href="#">Правила безопасности</a></li>
-					<li class="menu-child menu-setup"><a href="#">Общие настройки</a></li>
-					<li class="menu-child menu-setup"><a href="#">Звуковые файлы</a></li>
-					<li class="menu-child menu-setup"><a href="/ms/admin/terminals/">Терминалы</a></li>
-					<li class="menu-child menu-setup"><a href="/ms/admin/textfiles/">Текстовые файлы</a></li>
-					<li class="menu-child menu-setup"><a href="#">Пользователи</a></li>
-				</ul>
-				<ul class="nav nav-sidebar">
-					<li class="nav-header" id="menu-system"><a href="#">Настройки системы</a></li>
-					<li class="menu-child menu-system"><a href="#">Модули</a></li>
-					<li class="menu-child menu-system"><a href="#">Резервное копирование</a></li>
-					<li class="menu-child menu-system"><a href="#">Ошибки системы</a></li>
-					<li class="menu-child menu-system"><a href="#">Журнал действий</a></li>
-					<li class="menu-child menu-system"><a href="#">X-Ray</a></li>
-				</ul>
-			<?endif;?>
-		</div>
-*/?>
 		<div class="content col-md-9" style="vertical-align:top;">
 
