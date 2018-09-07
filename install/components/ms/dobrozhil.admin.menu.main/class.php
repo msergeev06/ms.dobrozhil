@@ -16,7 +16,6 @@ class AdminMenuMainComponent extends Component
 
 	public function run ()
 	{
-		//$arParams = &$this->arParams;
 		$arResult = &$this->arResult;
 		$USER = Application::getInstance()->getUser();
 		if (!Loader::includeModule('ms.dobrozhil')) return;
@@ -46,7 +45,5 @@ class AdminMenuMainComponent extends Component
 		}
 
 		$this->includeTemplate();
-		//msDebugNoAdmin($arParams);
-		//msDebugNoAdmin($arResult);
 	}
 }
