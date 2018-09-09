@@ -11,6 +11,12 @@ $arResult = &$this->arResult;
 <a href="<?=$arResult['CUR_DIR']?>/class_add.php" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Добавить новый класс</a>
 <a href="<?=$arResult['CUR_DIR']?>/object_add.php" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Добавить новый объект</a>
 <br>
+<?
+/*\Ms\Core\Entity\Application::getInstance()->includeComponent(
+    'ms:dobrozhil.objects.list',
+    ''
+);*/
+?>
 <?if($arResult['VIEW']=='tree'):?>
 	<?//=\MSergeev\Packages\Kuzmahome\Lib\Objects::getTreeView()?>
 	<script type="text/javascript">
