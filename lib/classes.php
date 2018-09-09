@@ -10,6 +10,7 @@
 
 namespace Ms\Dobrozhil\Lib;
 
+use Ms\Core\Entity\Application;
 use Ms\Core\Entity\ErrorCollection;
 use Ms\Core\Lib\Loader;
 use Ms\Core\Lib\Modules;
@@ -800,6 +801,306 @@ class Classes
 
 	//<editor-fold defaultstate="collapsed" desc="Get methods">
 	/* GETS */
+
+	/* *
+	 * @param int $parentID
+	 *
+	 * @return string
+	 * /
+	public static function getTreeView ($parentID=0)
+	{
+
+		//<editor-fold desc="Trash">
+		global $USER;
+		$adminDir = CoreLib\Loader::getSitePublic('kuzmahome').'admin/';
+		$html = '';
+
+		$arClasses = Tables\ClassesTable::getList(
+			array(
+				'select' => array('ID','TITLE','DESCRIPTION'),
+				'filter' => array('PARENT_ID'=>intval($parentID)),
+				'order' => array('TITLE'=>'ASC')
+			)
+		);
+		//</editor-fold>
+		if ($arClasses)
+		{
+			$html.='<table class="table"><tbody>';
+
+			foreach ($arClasses as $arClass)
+			{
+				$bNoObjects = false;
+				$arObjects = Tables\ObjectsTable::getList(
+					array(
+						'select' => array('ID','TITLE','DESCRIPTION'),
+						'filter' => array('CLASS_ID'=>intval($arClass['ID'])),
+						'order' => array('TITLE'=>'ASC')
+					)
+				);
+				if (!$arObjects)
+				{
+					$bNoObjects = true;
+				}
+				//Начало описания класса
+				$html.='<tr';
+				$html.='><td valign="top">';
+
+				$html.='<a href="#" id="link-'.$arClass['ID'].'"';
+				if (
+					$USER->issetUserCookie('classes-view-'.$arClass['ID'])===true
+					&& intval($USER->getUserCookie('classes-view-'.$arClass['ID']))==1
+				)
+				{
+					$html.=' data-comm="hide"';
+				}
+				else
+				{
+					$html.=' data-comm="show"';
+				}
+				$html.=' onclick="return showHideClasses('.$arClass['ID'].');"';
+				$html.=' class="show-hide-link btn btn-default btn-sm expand">';
+				if (
+					$USER->issetUserCookie('classes-view-'.$arClass['ID'])===true
+					&& intval($USER->getUserCookie('classes-view-'.$arClass['ID']))==1
+				)
+				{
+					$html.='-';
+				}
+				else
+				{
+					$html.='+';
+				}
+				$html.='</a><b>'.$arClass['TITLE'].'</b>';
+
+				if (strlen($arClass['DESCRIPTION'])>0)
+				{
+					$html.='<i>&nbsp;&nbsp;'.$arClass['DESCRIPTION'].'</i>';
+				}
+
+				$html.='</td><td valign="top" align="right">';
+
+				//Кнопки редактирования класса
+				$html.='<a href="'.$adminDir.'objects/class_edit.php?id='.$arClass['ID']
+					.'" class="btn btn-default btn-sm" title="Редактировать"><i class="glyphicon glyphicon-pencil"></i></a>'
+					.'<a href="'.$adminDir.'objects/class_properties_list.php?id='.$arClass['ID']
+					.'" class="btn btn-default btn-sm" title="Свойства"><i class="glyphicon glyphicon-th"></i></a>'
+					.'<a href="'.$adminDir.'objects/class_methods_list.php?id='.$arClass['ID']
+					.'" class="btn btn-default btn-sm" title="Методы"><i class="glyphicon glyphicon-th-list"></i></a>'
+					.'<a href="'.$adminDir.'objects/class_objects_list.php?id='.$arClass['ID']
+					.'" class="btn btn-default btn-sm" title="Объекты"><i class="glyphicon glyphicon-th-large"></i></a>'
+					.'<a href="'.$adminDir.'objects/class_add_child.php?id='.$arClass['ID'].'" class="btn btn-default btn-sm" title="Расширить"><i class=""></i>Расширить</a>';
+				if($bNoObjects)
+				{
+					$html.='<a href="'.$adminDir.'objects/index.php?deleteClass='.$arClass['ID'] //.'&id='.$arClass['ID']
+						.'" class="btn btn-default btn-sm" title="Удалить" onclick="'."return confirm('Вы действительно хотите удалить класс ".$arClass['TITLE']."?')"
+						.'"><i class="glyphicon glyphicon-remove"></i></a>';
+				}
+				//---end Кнопки редактирования
+
+				$html.='</td></tr>';
+
+				//Объекты класса и подклассы
+				if (!$bNoObjects)
+				{
+					$html.='<tr class="sublist-'.$arClass['ID'];
+					if (
+						$USER->issetUserCookie('classes-view-'.$arClass['ID'])===true
+						&& intval($USER->getUserCookie('classes-view-'.$arClass['ID']))==1
+					)
+					{
+						$html.=' show';
+					}
+					else
+					{
+						$html.=' hide';
+					}
+					$html.='">';
+
+					//Объекты класса
+					$html.='<td valign="top" colspan="2"><div><table border="0"><tbody>';
+
+					foreach ($arObjects as $arObject)
+					{
+						$html.='<tr><td><a href="'.$adminDir.'objects/class_object_edit.php?classID='.$arClass['ID'].'&id='.$arObject['ID'].'">'.$arObject['TITLE'].'</a>';
+						$html.='</td><td>&nbsp;';
+						if (strlen($arObject['DESCRIPTION'])>0)
+						{
+							$html.=$arObject['DESCRIPTION'];
+						}
+						$html.='</td></tr>';
+
+
+						$arMethods = Tables\MethodsTable::getList(
+							array(
+								'select' => array('ID','TITLE','DESCRIPTION'),
+								'filter' => array('OBJECT_ID'=>intval($arObject['ID'])),
+								'order' => array('TITLE'=>'ASC')
+							)
+						);
+						if ($arMethods)
+						{
+							//Переопределенные методы объекта класса
+							$html.='<tr><td>&nbsp;</td><td><small><ul>';
+
+							foreach ($arMethods as $arMethod)
+							{
+								$html.='<li><a href="'.$adminDir.'objects/object_method_edit.php?classID='.$arClass['ID'].'&objectID='.$arObject['ID'].'&id='.$arMethod['ID'].'">'.$arMethod['TITLE'].'</a>';
+								if (strlen($arMethod['DESCRIPTION'])>0)
+								{
+									$html.=' - '.$arMethod['DESCRIPTION'];
+								}
+								$html.='</li>';
+							}
+
+							$html.='</ul></small></td></tr>';
+							//---end Переопределенные методы...
+						}
+					}
+
+					$html.='</tbody></table></div></td>';
+					//---end Объекты класса...
+
+					$html.='</tr>';
+				}
+				//---end Объекты классов и...
+
+				//Если есть подклассы
+				$arChild = Tables\ClassesTable::getList(
+					array(
+						'select' => array('ID'),
+						'filter' => array('PARENT_ID'=>intval($arClass['ID'])),
+						'order' => array('TITLE'=>'ASC'),
+						'limit' => 1
+					)
+				);
+				if ($arChild && isset($arChild[0]))
+				{
+					$arChild = $arChild[0];
+				}
+				if ($arChild)
+				{
+					$html.='<tr class="sublist-'.$arClass['ID'];
+					if (
+						$USER->issetUserCookie('classes-view-'.$arClass['ID'])===true
+						&& intval($USER->getUserCookie('classes-view-'.$arClass['ID']))==1
+					)
+					{
+						$html.=' show';
+					}
+					else
+					{
+						$html.=' hide';
+					}
+					$html.='">';
+
+					$html.='<td style="padding-left:40px" colspan="2">';
+
+					$html.=static::getTreeView($arClass['ID']);
+
+					$html.='</td></tr>';
+				}
+
+			}
+
+			$html.='</tbody></table>';
+
+		}
+
+
+		return $html;
+	}*/
+
+
+	/**
+	 * Возвращает список классов (и их объектов, если необходимо)
+	 *
+	 * @param bool $bFull Флаг, результат включает свойства, методы и объекты
+	 * @param string $sParentClassName Имя родительского класса
+	 *
+	 * @return array
+	 */
+	public static function getList ($bFull=false, $sParentClassName=null)
+	{
+		$arReturn = array ();
+
+		$USER = Application::getInstance()->getUser();
+
+		$arClasses = ClassesTable::getList(array (
+			'select' => array (
+				'NAME',
+				'NOTE',
+				'PARENT_CLASS',
+				//'PARENT_LIST',
+				//'CHILDREN_LIST',
+				'TYPE',
+				'CREATED',
+				'UPDATED'
+			),
+			'filter' => array ('PARENT_CLASS' => $sParentClassName),
+			'order' => array ('NAME'=>'ASC')
+		));
+
+		if ($arClasses)
+		{
+			$i=0;
+			foreach ($arClasses as $ar_class)
+			{
+				$arReturn[$i] = $ar_class;
+				$arReturn[$i]['SHOW'] = (
+					$USER->issetUserCookie('classes-view-'.strtolower($ar_class['NAME']))===true
+					&& intval($USER->getUserCookie('classes-view-'.strtolower($ar_class['NAME'])))==1
+				);
+				if ($bFull)
+				{
+					$arReturn[$i]['PROPERTIES'] = Classes::getClassPropertiesList(
+						$ar_class['NAME'],
+						array (
+							'NAME',
+							'PROPERTY_NAME',
+							'NOTE',
+							'TYPE',
+							'LINKED',
+							'CREATED',
+							'UPDATED'
+						)
+					);
+					$arReturn[$i]['METHODS'] = Classes::getClassMethodList(
+						$ar_class['NAME'],
+						array (
+							'NAME',
+							'METHOD_NAME',
+							'NOTE',
+							'CREATED',
+							'UPDATED'
+						)
+					);
+					$arReturn[$i]['OBJECTS'] = Objects::getObjectsListByClassName($ar_class['NAME'],true);
+				}
+				$arReturn[$i]['CHILDREN'] = static::getList($bFull,$ar_class['NAME']);
+				$i++;
+			}
+		}
+
+		return $arReturn;
+	}
+
+	public static function getClassMethodList ($sClassName, $arFields=array('NAME','LAST_RUN','LAST_PARAMETERS'))
+	{
+		//TODO: Добавить проверки имени класса
+
+		$arRes = ClassMethodsTable::getList(array (
+			'select' => $arFields,
+			'filter' => array ('CLASS_NAME'=>$sClassName),
+			'order' => array ('METHOD_NAME'=>'ASC')
+		));
+
+		if (!$arRes)
+		{
+			return array ();
+		}
+
+		return $arRes;
+	}
 
 	/**
 	 * Возвращает список родителей класса

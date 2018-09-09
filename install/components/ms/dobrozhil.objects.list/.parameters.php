@@ -12,19 +12,14 @@ return array(
 		'REFRESH' => true,
 		'DEFAULT' => 'Y'
 	),
+	'VIEW' => array (
+		'NAME' => 'Формат списка',
+		'TYPE' => 'STRING',
+		'DEFAULT' => 'tree'
+	),
 	'ROOT_PATH' => array(
 		'NAME' => 'Путь к разделу относительно корня',
 		'TYPE' => 'STRING',
 		'DEFAULT' => '/ms/admin/objects/'
-	),
-	'PATH_CLASS_ADD' => array (
-		'NAME' => 'Относительный путь добавления нового класса',
-		'TYPE' => 'STRING',
-		'DEFAULT' => 'class_add/'
-	),
-	'PATH_OBJECT_ADD' => array (
-		'NAME' => 'Относительный путь добавления нового объекта',
-		'TYPE' => 'STRING',
-		'DEFAULT' => 'object_add/'
-	),
+	)
 );

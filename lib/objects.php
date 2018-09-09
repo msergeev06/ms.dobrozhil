@@ -649,10 +649,11 @@ class Objects
 	 * Возаращает список объектов указанного класса, либо false
 	 *
 	 * @param string $sClassName Имя класса
+	 * @param bool   $bFull      Флаг, что требуется не только имя
 	 *
 	 * @return array
 	 */
-	public static function getObjectsListByClassName ($sClassName)
+	public static function getObjectsListByClassName ($sClassName, $bFull=false)
 	{
 		if (!Classes::checkName($sClassName))
 		{
@@ -670,28 +671,32 @@ class Objects
 
 		$arRes = ObjectsTable::getList(
 			array(
-				'select' => 'NAME',
-				'filter' => array('CLASS_NAME'=>$sClassName)
+				'select' => array(
+					'NAME',
+					'CLASS_NAME',
+					'NOTE',
+					'ROOM_NAME',
+					'CREATED',
+					'UPDATED'
+				),
+				'filter' => array('CLASS_NAME'=>$sClassName),
+				'order' => array ('NAME'=>'ASC')
 			)
 		);
 		if (!$arRes || empty($arRes))
 		{
-/*			//'Не удалось найти ни одного объекта заданного класса'
-			static::addError(
-				Loc::getModuleMessage(
-					'ms.dobrozhil',
-					'error_no_objects_in_class'
-				),
-				'NO_OBJECTS_IN_CLASS'
-			);
-			return false;*/
 			return array ();
 		}
 
-		$arList = array();
-		foreach ($arRes as $obj)
+		if ($bFull)
 		{
-			$arList[] = $obj['NAME'];
+			return $arRes;
+		}
+
+		$arList = array();
+		foreach ($arRes as $object)
+		{
+			$arList[] = $object['NAME'];
 		}
 
 		return $arList;
