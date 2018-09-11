@@ -17,10 +17,18 @@ $arParams = &$this->arParams;
     'ms:dobrozhil.objects.list',
     '',
     array (
-        'SET_TITLE' => $arParams['SET_TITLE'],
-        'USE_SEF' => $arParams['USE_SEF'],
-        'VIEW' => $arResult['VIEW'],
-        'ROOT_PATH' => $arParams['ROOT_PATH']
+        'SET_TITLE'                     => $arParams['SET_TITLE'],
+        'USE_SEF'                       => $arParams['USE_SEF'],
+        'VIEW'                          => $arResult['VIEW'],
+        'ROOT_PATH'                     => $arParams['ROOT_PATH'],
+	    'PATH_CLASS_EDIT'               => $arParams['PATH_CLASS_EDIT'],
+	    'PATH_CLASS_PROPERTIES_LIST'    => $arParams['PATH_CLASS_PROPERTIES_LIST'],
+	    'PATH_CLASS_METHODS_LIST'       => $arParams['PATH_CLASS_METHODS_LIST'],
+	    'PATH_CLASS_METHOD_EDIT'        => $arParams['PATH_CLASS_METHOD_EDIT'],
+	    'PATH_CLASS_OBJECTS_LIST'       => $arParams['PATH_CLASS_OBJECTS_LIST'],
+	    'PATH_CLASS_ADD_CHILD'          => $arParams['PATH_CLASS_ADD_CHILD'],
+	    'PATH_CLASS_DELETE'             => $arParams['PATH_CLASS_DELETE'],
+	    'PATH_OBJECT_EDIT'              => $arParams['PATH_OBJECT_EDIT']
     )
 );
 ?>

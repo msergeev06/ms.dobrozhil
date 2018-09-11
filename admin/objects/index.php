@@ -2,8 +2,8 @@
 
 \Ms\Core\Entity\Application::getInstance()->includeComponent(
 	'ms:dobrozhil.objects',
-	'',
-	array ()
+	''//,
+//	array ()
 /*	array (
 		'SET_TITLE' => 'Y',
 		'USE_SEF' => 'Y',
