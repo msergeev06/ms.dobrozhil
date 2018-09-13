@@ -35,7 +35,8 @@ class Classes
 	 * символа подчеркивания и за которым следует любое количество букв, цифр
 	 * или символов подчеркивания.
 	 */
-	const NAME_REGULAR = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+//	const NAME_REGULAR = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+	const NAME_REGULAR = '/^[a-zA-Z_][a-zA-Z0-9_]*$/';
 
 	/**
 	 * @var null|ErrorCollection
@@ -359,6 +360,30 @@ class Classes
 
 		return (!!$arRes);
 	}
+
+	/**
+	 * Проверяет правильность заполнения поля с именем класса, для добавления класса
+	 *
+	 * @param string $sClassName Имя класса
+	 *
+	 * @return bool|string
+	 */
+	public static function checkClassAddNameField ($sClassName)
+	{
+		if (!static::checkName($sClassName))
+		{
+			return 'Имя класса содержит недопустимые символы';
+		}
+		elseif (static::checkClassExists($sClassName))
+		{
+			return 'Класс с данным именем уже существует';
+		}
+		else
+		{
+			return true;
+		}
+	}
+
 
 	//</editor-fold>
 

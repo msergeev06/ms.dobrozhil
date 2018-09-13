@@ -2,5 +2,9 @@
 
 $arResult = &$this->arResult;
 
+\Ms\Core\Entity\Application::getInstance()->includeComponent(
+    'ms:dobrozhil.objects.class.add',
+    '',
+    array ()
+);
 ?>
-<p>Class add</p>

@@ -97,7 +97,7 @@ function msShowClasses ($arClasses, $arParams=array())
                                             <ul>
 												<?foreach ($ar_class['METHODS'] as $ar_method):?>
                                                     <li>
-                                                        <a href="<?=$arParams['ROOT_PATH']?><?=replace($arParams['PATH_CLASS_METHOD_EDIT'],array ('CLASS_NAME'=>$ar_class['NAME'],'METHOD_NAME'=>$ar_method['NAME']))?>"
+                                                        <a href="<?=$arParams['ROOT_PATH']?><?=replace($arParams['PATH_CLASS_METHOD_EDIT'],array ('METHOD_NAME'=>$ar_method['NAME']))?>"
                                                         ><?=$ar_method['NAME']?></a> - <?=$ar_method['NOTE']?>
                                                     </li>
 												<?endforeach;?>
