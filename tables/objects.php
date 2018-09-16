@@ -44,6 +44,7 @@ class ObjectsTable extends Lib\DataManager
 			)),
 			new Fields\StringField('ROOM_NAME',array(
 				//'Имя комнаты, где расположен объект'
+				'link' => ClassesTable::getTableName().'.NAME',
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_room_name')
 			)),
 			new Fields\DateTimeField('CREATED',array(

@@ -43,6 +43,7 @@ Loader::AddAutoLoadClasses(
 		/** Interfaces */
 		$namespaceRoot.'\Interfaces\TypeProcessing' => $moduleRoot.'/interfaces/type_processing.php',
 		/** Lib */
+		$namespaceRoot.'\Lib\AdminPanel'=> $moduleRoot.'/lib/admin_panel.php',
 		$namespaceRoot.'\Lib\Classes'   => $moduleRoot.'/lib/classes.php',
 		$namespaceRoot.'\Lib\Cron'      => $moduleRoot.'/lib/cron.php',
 		$namespaceRoot.'\Lib\Handlers'  => $moduleRoot.'/lib/handlers.php',

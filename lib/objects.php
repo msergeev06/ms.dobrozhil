@@ -129,6 +129,29 @@ class Objects
 		return Classes::checkName($sObjectName);
 	}
 
+	/**
+	 * Проверяет правильность заполнения поля имени объекта для его добавления
+	 *
+	 * @param string $sObjectName Имя объекта
+	 *
+	 * @return bool|string
+	 */
+	public static function checkObjectAddNameField ($sObjectName)
+	{
+		if (!static::checkName($sObjectName))
+		{
+			return 'Имя объекта содержит запрещенные символы';
+		}
+		elseif (static::checkExists($sObjectName))
+		{
+			return 'Объект с данным именем уже существует';
+		}
+		else
+		{
+			return true;
+		}
+	}
+
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="Add methods">

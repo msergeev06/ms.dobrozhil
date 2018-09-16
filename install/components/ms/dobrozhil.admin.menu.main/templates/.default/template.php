@@ -1,5 +1,6 @@
 <?php if(!defined('MS_PROLOG_INCLUDED')||MS_PROLOG_INCLUDED!==true)die('Access denied');
 $arResult = &$this->arResult;
+$adminPath = \Ms\Core\Entity\Application::getInstance()->getAppParam('admin_path');
 ?>
 <div class="left-menu col-md-3 sidebar" style="vertical-align:top;background-color: #f5f5f5;">
 	<?if(isset($arResult['GENERAL']) && !empty($arResult['GENERAL'])):?>
@@ -11,7 +12,7 @@ $arResult = &$this->arResult;
 			<?foreach ($arResult['MENU']['SORT'][$generalName] as $sort=>$itemID):?>
 				<?if(isset($arResult['MENU']['LIST'][$generalName][$itemID])):?>
 						<li class="menu-child menu-<?=$arGeneral['CODE']?>">
-							<a href="/ms/admin/<?=$arResult['MENU']['LIST'][$generalName][$itemID]['url']?>" title="<?=$arResult['MENU']['LIST'][$generalName][$itemID]['title']?>">
+							<a href="<?=$adminPath?><?=$arResult['MENU']['LIST'][$generalName][$itemID]['url']?>" title="<?=$arResult['MENU']['LIST'][$generalName][$itemID]['title']?>">
 								<?=$arResult['MENU']['LIST'][$generalName][$itemID]['text']?>
 							</a>
 						</li>
