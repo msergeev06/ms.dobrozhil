@@ -26,4 +26,20 @@ $arReturn['OnAfterSetObjectProperty'] = array ();
 
 $arReturn['OnBuildAdminMainMenu'] = array ();
 
+$arReturn['OnBeforeChangeClassName'] = array (
+	'BREAK' => true,
+	'FIELDS' => array (
+		'OLD_CLASS_NAME',
+		'NEW_CLASS_NAME'
+	)
+);
+$arReturn['OnAfterChangeClassName'] = array (
+	'FIELDS' => array (
+		'OLD_CLASS_NAME',
+		'NEW_CLASS_NAME'
+	)
+);
+$arReturn['OnChangeClassName'] = array ();
+$arReturn['OnAfterChangeClassName'] = array ();
+
 return $arReturn;
