@@ -384,6 +384,25 @@ class Classes
 		}
 	}
 
+	/**
+	 * Проверяет правильность заполнения поля с именем класса, для редактирования класса
+	 *
+	 * @param string $sClassName Имя класса
+	 *
+	 * @return bool|string
+	 */
+	public static function checkClassEditNameField ($sClassName)
+	{
+		if (!static::checkName($sClassName))
+		{
+			return 'Имя класса содержит недопустимые символы';
+		}
+		else
+		{
+			return true;
+		}
+	}
+
 
 	//</editor-fold>
 
