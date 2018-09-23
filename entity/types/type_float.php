@@ -19,7 +19,7 @@ class TypeFloat implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -27,6 +27,16 @@ class TypeFloat implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'Число (N)';
+	}
+
+	public function getCode (): string
+	{
+		return 'N';
 	}
 
 	public function processingValueFromDB (string $value)

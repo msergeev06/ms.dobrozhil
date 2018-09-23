@@ -19,7 +19,7 @@ class TypeInt implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -27,6 +27,16 @@ class TypeInt implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'N:Целое число';
+	}
+
+	public function getCode (): string
+	{
+		return 'N:INT';
 	}
 
 	public function processingValueFromDB (string $value)

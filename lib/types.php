@@ -11,14 +11,87 @@
 namespace Ms\Dobrozhil\Lib;
 
 use Ms\Core\Entity\Application;
+use Ms\Core\Entity\ErrorCollection;
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib\Events;
 use Ms\Core\Lib\Loader;
+use Ms\Core\Lib\Logs;
 use Ms\Core\Lib\Tools;
 use Ms\Dobrozhil\Interfaces\TypeProcessing;
 
 class Types
 {
+	/**
+	 * @var ErrorCollection
+	 */
+	protected static $errorCollection = null;
+
+	private static $arTypeHandlers = array ();
+
+	/**
+	 * Возвращает полученный сторонний обработчик свойства класса заданного типа, либо типа Строка
+	 *
+	 * @param string $sType
+	 *
+	 * @return TypeProcessing
+	 */
+	public static function getHandler ($sType='S')
+	{
+		$handler = null;
+		$sType = strtoupper($sType);
+		if (!isset(static::$arTypeHandlers[$sType]))
+		{
+			Events::runEvents(
+				'ms.dobrozhil',
+				'OnGetClassPropertyTypeHandler',
+				array ($sType,&$handler)
+			);
+			if (is_null($handler)||!($handler instanceof TypeProcessing))
+			{
+				Logs::setWarning(
+					'Обработчик типа "#PROPERTY_TYPE#" свойства класса не найден',
+					array (
+						'PROPERTY_TYPE'=>$sType,
+						'ERROR_CODE'=>'NO_CLASS_PROPERTY_TYPE_HANDLER'
+					),
+					self::$errorCollection
+				);
+				if (strpos($sType,':')!==false)
+				{
+					$arType = explode(':',$sType);
+				}
+				else
+				{
+					$arType = array ($sType);
+				}
+				switch ($arType[0])
+				{
+					case 'N':
+						/**
+						 * @var TypeProcessing $handler
+						 */
+						$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance');
+						break;
+					case 'B':
+						/**
+						 * @var TypeProcessing $handler
+						 */
+						$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeBool::getInstance');
+						break;
+					default: //S
+						/**
+						 * @var TypeProcessing $handler
+						 */
+						$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeString::getInstance');
+						break;
+				}
+			}
+			static::$arTypeHandlers[$sType] = $handler;
+		}
+
+		return static::$arTypeHandlers[$sType];
+	}
+
 	/**
 	 * Обрабатывает значение свойства заданного типа после получения из БД
 	 *
@@ -29,39 +102,7 @@ class Types
 	 */
 	public static function prepareValueFrom ($mValue, $sType='S')
 	{
-		$handler = null;
-		$sType = strtoupper($sType);
-		//Вызываем событие, которое должно вернуть обработчик указанного типа данных
-		$arEvents = Events::getModuleEvents(
-			'ms.dobrozhil',
-			'OnPreparePropertyValue'
-		);
-		if (!empty($arEvents))
-		{
-			foreach ($arEvents as $sort=>$ar_events)
-			{
-				if (!empty($ar_events))
-				{
-					foreach ($ar_events as $hash=>$event)
-					{
-						$handler = Events::executeModuleEvent(
-							$event,
-							array ('TYPE'=>$sType)
-						);
-						//Если обработчик был найден, останавливаем обработку остальных событий
-						if ($handler instanceof TypeProcessing)
-						{
-							break 2;//Выходим из обоих циклов
-						}
-					}
-				}
-			}
-		}
-		//Если обработчик не был найден, считаем что значение это строка
-		if (!($handler instanceof TypeProcessing))
-		{
-			$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeString::getInstance');
-		}
+		$handler = static::getHandler($sType);
 
 		return $handler->processingValueFromDB($mValue);
 	}
@@ -76,94 +117,34 @@ class Types
 	 */
 	public static function prepareValueTo ($mValue, $sType='S')
 	{
-		$handler = null;
-		$sType = strtoupper($sType);
-		//Вызываем событие, которое должно вернуть обработчик указанного типа данных
-		$arEvents = Events::getModuleEvents(
-			'ms.dobrozhil',
-			'OnPreparePropertyValue',
-			array ('TYPE'=>$sType)
-		);
-		if (!empty($arEvents))
-		{
-			foreach ($arEvents as $sort=>$ar_events)
-			{
-				if (!empty($ar_events))
-				{
-					foreach ($ar_events as $hash=>$event)
-					{
-						$handler = Events::executeModuleEvent(
-							$event,
-							array ('TYPE'=>$sType)
-						);
-						//Если обработчик был найден, останавливаем обработку остальных событий
-						if ($handler instanceof TypeProcessing)
-						{
-							break 2;//Выходим из обоих циклов
-						}
-					}
-				}
-			}
-		}
-		//Если обработчик не был найден, считаем что значение это строка
-		if (!($handler instanceof TypeProcessing))
-		{
-			$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeString::getInstance');
-		}
+		$handler = static::getHandler($sType);
 
 		return $handler->processingValueFromDB($mValue);
-
 	}
 
-	/**
-	 * Определяет и возвращает обработчик значения свойства, либо false
-	 * @deprecated
-	 * @see Types::OnPreparePropertyValueHandler()
-	 *
-	 * @param string $sType  Тип свойства
-	 *
-	 * @return string|bool
-	 */
-	protected static function getHandler ($sType='S')
+	public static function getTitle ($sType)
 	{
-		$sType = strtolower($sType);
-		$fileName = Application::getInstance()->getSettings()->getModulesRoot()
-			.'/ms.dobrozhil/include/types/type_'.$sType.'.php';
-		if (!file_exists($fileName))
-		{
-			return false;
-		}
-		else
-		{
-			$typeHandler = include($fileName);
-			if (!$typeHandler)
-			{
-				return false;
-			}
-			else
-			{
-				return call_user_func($typeHandler);
-			}
-		}
+		/**
+		 * @var TypeProcessing $handler
+		 */
+		$handler = static::getHandler($sType);
+
+		return $handler->getTitle();
 	}
 
 	/* Events */
 
 	/**
-	 * @param $arParams
+	 * Обработчик события получения обработчика заданного типа свойства класса
 	 *
-	 * @return TypeProcessing
+	 * @param string $sType Тип свойства класса
+	 * @param TypeProcessing $handler
+	 *
+	 * @return void
 	 */
-	public static function OnPreparePropertyValueHandler ($arParams)
+	public static function OnGetClassPropertyTypeHandler ($sType, &$handler)
 	{
-		if (isset($arParams['TYPE']))
-		{
-			$arParams['TYPE'] = strtoupper($arParams['TYPE']);
-		}
-		else
-		{
-			$arParams['TYPE'] = 'S';
-		}
+		$sType = strtolower($sType);
 
 		/*
 		 * Обрабатываемые типы:
@@ -180,54 +161,61 @@ class Types
 		 * B - bool - Флаг
 		 */
 
-		switch ($arParams['TYPE'])
+		switch ($sType)
 		{
-			case 'S':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeString::getInstance');
 			case 'B':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeBool::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeBool::getInstance');
+				break;
 			case 'S:DATE':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeDate::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeDate::getInstance');
+				break;
 			case 'S:DATETIME':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeDatetime::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeDatetime::getInstance');
+				break;
 			case 'S:TIME':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeTime::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeTime::getInstance');
+				break;
 			case 'S:COLOR':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeColor::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeColor::getInstance');
+				break;
 			case 'S:COORDINATES':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeCoordinates::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeCoordinates::getInstance');
+				break;
 			case 'N':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance');
+				break;
 			case 'N:INT':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeInt::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeInt::getInstance');
+				break;
 			case 'N:FILE':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeFile::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeFile::getInstance');
+				break;
 			case 'N:TIMESTAMP':
-				return call_user_func('Ms\Dobrozhil\Entity\Types\TypeTimestamp::getInstance');
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeTimestamp::getInstance');
+				break;
 			default:
-				if (strpos($arParams['TYPE'],':')!==false)
-				{
-					$arType = explode(':',$arParams['TYPE']);
-				}
-				else
-				{
-					$arType = array ($arParams['TYPE']);
-				}
-
-				if ($arType[0]=='N')
-				{
-					return call_user_func('Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance');
-				}
-				elseif ($arType[0]=='B')
-				{
-					return call_user_func('Ms\Dobrozhil\Entity\Types\TypeBool::getInstance');
-				}
-				else //=='s'
-				{
-					return call_user_func('Ms\Dobrozhil\Entity\Types\TypeString::getInstance');
-				}
+				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeString::getInstance');
+				break;
 		}
+	}
 
+	/**
+	 * Возвращает список ошибок, возникших в ходе работы методов класса
+	 *
+	 * @return ErrorCollection|null
+	 */
+	public static function getErrors ()
+	{
+		return static::$errorCollection;
+	}
+
+	protected static function addError($sMessage, $sCode=null)
+	{
+		if (is_null(static::$errorCollection))
+		{
+			static::$errorCollection = new ErrorCollection();
+		}
+		static::$errorCollection->setError($sMessage,$sCode);
 	}
 }
  

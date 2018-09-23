@@ -18,7 +18,7 @@ class TypeString implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -26,6 +26,16 @@ class TypeString implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'Строка (S)';
+	}
+
+	public function getCode (): string
+	{
+		return 'S';
 	}
 
 	public function processingValueFromDB (string $value)

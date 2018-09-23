@@ -18,7 +18,7 @@ class TypeColor implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -26,6 +26,16 @@ class TypeColor implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'S:Цвет';
+	}
+
+	public function getCode (): string
+	{
+		return 'S:COLOR';
 	}
 
 	public function processingValueFromDB (string $value)

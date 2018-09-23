@@ -15,11 +15,14 @@ use Ms\Core\Lib\Tools;
 
 class TypeBool implements TypeProcessing
 {
+	/**
+	 * @var TypeProcessing
+	 */
 	protected static $instance = null;
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -27,6 +30,16 @@ class TypeBool implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle ():string
+	{
+		return 'Да/Нет (B)';
+	}
+
+	public function getCode (): string
+	{
+		return 'B';
 	}
 
 	public function processingValueFromDB (string $value)

@@ -10,9 +10,18 @@
 
 namespace Ms\Dobrozhil\Interfaces;
 
+/**
+ * Interface TypeProcessing
+ *
+ * @package Ms\Dobrozhil\Interfaces
+ */
 interface TypeProcessing
 {
-	public static function getInstance ();
+	public static function getInstance (): TypeProcessing;
+
+	public function getTitle ():string;
+
+	public function getCode (): string;
 
 	public function processingValueFromDB (string $value);
 

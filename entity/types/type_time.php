@@ -19,7 +19,7 @@ class TypeTime implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -27,6 +27,16 @@ class TypeTime implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'S:Время';
+	}
+
+	public function getCode (): string
+	{
+		return 'S:TIME';
 	}
 
 	public function processingValueFromDB (string $value)

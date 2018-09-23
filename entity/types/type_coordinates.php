@@ -18,7 +18,7 @@ class TypeCoordinates implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -26,6 +26,16 @@ class TypeCoordinates implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'S:Координаты';
+	}
+
+	public function getCode (): string
+	{
+		return 'S:COORDINATES';
 	}
 
 	public function processingValueFromDB (string $value)

@@ -19,7 +19,7 @@ class TypeDate implements TypeProcessing
 
 	protected function __construct (){}
 
-	public static function getInstance ()
+	public static function getInstance (): TypeProcessing
 	{
 		if (is_null(static::$instance))
 		{
@@ -27,6 +27,16 @@ class TypeDate implements TypeProcessing
 		}
 
 		return static::$instance;
+	}
+
+	public function getTitle (): string
+	{
+		return 'S:Дата';
+	}
+
+	public function getCode (): string
+	{
+		return 'S:DATE';
 	}
 
 	public function processingValueFromDB (string $value)
