@@ -10,7 +10,7 @@
 
 namespace Ms\Dobrozhil\Entity\Objects;
 
-class Rooms extends Base
+class Rooms extends BaseClass
 {
 	public function __construct ($objectName)
 	{

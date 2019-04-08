@@ -45,15 +45,4 @@ class ScriptsCategoriesTable extends DataManager
 			))
 		);
 	}
-
-	public static function getValues ()
-	{
-		return array (
-			array(
-				'ID' => 1,
-				//'Классы и объекты'
-				'TITLE' => Loc::getModuleMessage('ms.dobrozhil','group_title')
-			)
-		);
-	}
 }

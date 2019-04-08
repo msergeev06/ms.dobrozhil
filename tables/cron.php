@@ -42,13 +42,16 @@ class CronTable extends DataManager
 			new Fields\TextField('CODE_CONDITION',array (
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code_condition')
 			)),
-			new Fields\TextField('CODE',array (
+/*			new Fields\TextField('CODE',array (
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code')
 			)),
-			new Fields\StringField('SCRIPT_NAME',array (
-				'link' => ScriptsTable::getTableName().'.NAME',
+			new Fields\StringField(
+				'SCRIPT_NAME',
+				array (
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_script_name')
-			)),
+				),
+				ScriptsTable::getTableName().'.NAME'
+			),*/
 			new Fields\DateTimeField('NEXT_RUN',array (
 				'required' => true,
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_next_run')

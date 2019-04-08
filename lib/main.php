@@ -53,7 +53,7 @@ class Main
 	public static function getGeneralAdminMenuArray()
 	{
 		return array (
-			'admin_main_menu_general' => array('NAME'=>'Основное','CODE'=>'general','ICON'=>'/ms/images/ms_dobrozhil/general_icon.png'),
+			'admin_main_menu_general' => array('NAME'=>'Главное','CODE'=>'general','ICON'=>'/ms/images/ms_dobrozhil/general_icon.png'),
 			'admin_main_menu_apps' => array('NAME'=>'Приложения','CODE'=>'apps','ICON'=>'/ms/images/ms_dobrozhil/apps_icon.png'),
 			'admin_main_menu_devices' => array('NAME'=>'Устройства','CODE'=>'devices','ICON'=>'/ms/images/ms_dobrozhil/devices_icon.png'),
 			'admin_main_menu_setup' => array('NAME'=>'Установки','CODE'=>'setup','ICON'=>'/ms/images/ms_dobrozhil/setup_icon.png'),

@@ -15,21 +15,22 @@ $moduleName = 'ms.dobrozhil';
 $moduleRoot = $app->getSettings()->getModulesRoot().'/'.$moduleName;
 $namespaceRoot = 'Ms\Dobrozhil';
 
-Loader::AddAutoLoadClasses(
+/*Loader::AddAutoLoadClasses(
 	array(
-		/** Entity */
+		/** Entity * /
 		$namespaceRoot.'\Entity\Script'    => $moduleRoot.'/entity/script.php',
 
-		/** Entity\Code */
+		/** Entity\Code * /
 		$namespaceRoot.'\Entity\Code\TextEditor'        => $moduleRoot.'/entity/code/text_editor.php',
 
-		/** Entity\Objects */
+		/** Entity\Objects * /
 		$namespaceRoot.'\Entity\Objects\Base'           => $moduleRoot.'/entity/objects/base.php',
 		$namespaceRoot.'\Entity\Objects\Users'          => $moduleRoot.'/entity/objects/users.php',
 		$namespaceRoot.'\Entity\Objects\Rooms'          => $moduleRoot.'/entity/objects/rooms.php',
+		$namespaceRoot.'\Entity\Objects\NobodyHomeMode' => $moduleRoot.'/entity/objects/nobody_home_mode.php',
 		$namespaceRoot.'\Entity\Objects\OperationModes' => $moduleRoot.'/entity/objects/operation_modes.php',
 		$namespaceRoot.'\Entity\Objects\SystemStates'   => $moduleRoot.'/entity/objects/system_states.php',
-		/** Entity\Types */
+		/** Entity\Types * /
 		$namespaceRoot.'\Entity\Types\TypeBool'         => $moduleRoot.'/entity/types/type_bool.php',
 		$namespaceRoot.'\Entity\Types\TypeDate'         => $moduleRoot.'/entity/types/type_date.php',
 		$namespaceRoot.'\Entity\Types\TypeDatetime'     => $moduleRoot.'/entity/types/type_datetime.php',
@@ -40,19 +41,20 @@ Loader::AddAutoLoadClasses(
 		$namespaceRoot.'\Entity\Types\TypeTime'         => $moduleRoot.'/entity/types/type_time.php',
 		$namespaceRoot.'\Entity\Types\TypeTimestamp'    => $moduleRoot.'/entity/types/type_timestamp.php',
 
-		/** Interfaces */
+		/** Interfaces * /
 		$namespaceRoot.'\Interfaces\TypeProcessing' => $moduleRoot.'/interfaces/type_processing.php',
-		/** Lib */
+		/** Lib * /
 		$namespaceRoot.'\Lib\AdminPanel'=> $moduleRoot.'/lib/admin_panel.php',
 		$namespaceRoot.'\Lib\Classes'   => $moduleRoot.'/lib/classes.php',
 		$namespaceRoot.'\Lib\Cron'      => $moduleRoot.'/lib/cron.php',
+		$namespaceRoot.'\Lib\Errors'    => $moduleRoot.'/lib/errors.php',
 		$namespaceRoot.'\Lib\Handlers'  => $moduleRoot.'/lib/handlers.php',
 		$namespaceRoot.'\Lib\Main'      => $moduleRoot.'/lib/main.php',
 		$namespaceRoot.'\Lib\Objects'   => $moduleRoot.'/lib/objects.php',
 		$namespaceRoot.'\Lib\Scheduler' => $moduleRoot.'/lib/scheduler.php',
 		$namespaceRoot.'\Lib\Scripts'   => $moduleRoot.'/lib/scripts.php',
 		$namespaceRoot.'\Lib\Types'     => $moduleRoot.'/lib/types.php',
-		/** Tables */
+		/** Tables * /
 		$namespaceRoot.'\Tables\ClassMethodsTable'                  => $moduleRoot.'/tables/class_methods.php',
 		$namespaceRoot.'\Tables\ClassPropertiesTable'               => $moduleRoot.'/tables/class_properties.php',
 		$namespaceRoot.'\Tables\ClassesTable'                       => $moduleRoot.'/tables/classes.php',
@@ -65,14 +67,14 @@ Loader::AddAutoLoadClasses(
 		$namespaceRoot.'\Tables\ScriptsCategoriesTable'             => $moduleRoot.'/tables/scripts_categories.php',
 		$namespaceRoot.'\Tables\TextEditorCodeTable'                => $moduleRoot.'/tables/text_editor_code.php'
 	)
-);
+);*/
 
 //***** Functions ********
 include_once($moduleRoot.'/functions/functions.main.php');
 //include_once($moduleRoot.'/functions/functions.objects.php');
 
 /*
-$USER = &Application::getInstance()->getUser();
+$USER = Application::getInstance()->getUser();
 if ($USER->getID() != 2)
 {
 	$arRes = \Ms\Dobrozhil\Tables\UsersTable::getOne(

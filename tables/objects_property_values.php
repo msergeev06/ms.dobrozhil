@@ -10,12 +10,15 @@
 
 namespace Ms\Dobrozhil\Tables;
 
+use Ms\Core\Entity\Application;
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
+use Ms\Core\Tables\UsersTable;
 use Ms\Dobrozhil\Lib\Classes;
 use Ms\Dobrozhil\Lib\Objects;
 use Ms\Core\Lib\Loc;
+use Ms\Dobrozhil\Lib\Types;
 
 Loc::includeLocFile(__FILE__);
 
@@ -29,23 +32,55 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 		return Loc::getModuleMessage('ms.dobrozhil','table_title');
 	}
 
+	public static function getInnerCreateSql ()
+	{
+		return static::addUnique(array ('OBJECT_NAME','PROPERTY_NAME'));
+	}
+
 	protected static function getMap()
 	{
+		$userID = Application::getInstance()->getUser()->getID();
+
 		return array(
-			new Fields\StringField('NAME',array(
-				'primary' => true,
-				//'Полное имя свойства вида объект.свойство'
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name')
-			)),
-			new Fields\StringField('TYPE',array(
-				//'Тип значения свойства'
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type')
-			)),
+			Lib\TableHelper::primaryField(),
+			new Fields\StringField(
+				'OBJECT_NAME',
+				array (
+					'required' => true,
+					//'Имя объекта'
+					'title' => 'Имя объекта'
+				),
+				ObjectsTable::getTableName().'.NAME',
+				'cascade',
+				'cascade'
+			),
+			new Fields\StringField(
+				'PROPERTY_NAME',
+				array (
+					'required' => true,
+					'title' => 'Имя свойства'
+				),
+				ClassPropertiesTable::getTableName().'.PROPERTY_NAME',
+				'cascade',
+				'cascade'
+			),
 			new Fields\TextField('VALUE',array(
 				//'Значение свойства'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value')
 			)),
-			new Fields\DateTimeField('UPDATED',array(
+			new Fields\IntegerField(
+				'UPDATED_BY',
+				[
+					'required' => true,
+					'default_create' => 0,
+					'default_insert' => $userID,
+					'default_update' => $userID,
+					//'Время обновления свойства'
+					'title' => Loc::getModuleMessage('ms.dobrozhil','field_updated')
+				],
+				UsersTable::getTableName().'ID'
+			),
+			new Fields\DateTimeField('UPDATED_DATE',array(
 				'required' => true,
 				'default_insert' => new Date(),
 				'default_update' => new Date(),
@@ -59,70 +94,42 @@ class ObjectsPropertyValuesTable extends Lib\DataManager
 	{
 		return array(
 			array(
-				'NAME' => 'System.externalIP',
-				'TYPE' => 'S',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'externalIP',
 				'VALUE' => '255.255.255.255'
 			),
 			array(
-				'NAME' => 'System.homeName',
-				'TYPE' => 'S',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'homeName',
 				//'Кузя'
 				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_home_name')
 			),
 			array(
-				'NAME' => 'System.lastSayMessage',
-				'TYPE' => 'S',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'lastSayMessage',
 				//'Первый запуск'
 				'VALUE' => Loc::getModuleMessage('ms.dobrozhil','value_last_say_message')
 			),
 			array(
-				'NAME' => 'System.minAloudLevel',
-				'TYPE' => 'N',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'minAloudLevel',
 				'VALUE' => 1
 			),
 			array(
-				'NAME' => 'System.networkStatus',
-				'TYPE' => 'S',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'networkStatus',
 				'VALUE' => 'green'
 			),
 			array(
-				'NAME' => 'System.somebodyHome',
-				'TYPE' => 'B',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'somebodyHome',
 				'VALUE' => 'Y'
 			),
 			array(
-				'NAME' => 'System.volumeLevel',
-				'TYPE' => 'N',
+				'OBJECT_NAME' => 'System',
+				'PROPERTY_NAME' => 'volumeLevel',
 				'VALUE' => 100
 			)
 		);
 	}
-
-	protected static function OnAfterAdd ($arAdd,$res)
-	{
-//		static::setType($arAdd,$res);
-	}
-
-/*	protected static function setType ($arAddUpdate, $res)
-	{
-		if (!is_null(static::$updateType) || !$res->getResult())
-		{
-			return;
-		}
-		static::$updateType = true;
-
-		list($sObjectName,$sPropertyName) = explode('.',$arAddUpdate['NAME']);
-		$objectClassName = Objects::getClassByObject($sObjectName);
-		if ($objectClassName)
-		{
-			$objectClassName = $objectClassName['CLASS_NAME'];
-			$type = Classes::getClassPropertiesParams($objectClassName,$sPropertyName,'TYPE');
-			static::update(
-				$arAddUpdate['NAME'],
-				array('TYPE'=>strtoupper($type))
-			);
-		}
-
-		static::$updateType = null;
-	}*/
 }

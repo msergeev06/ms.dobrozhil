@@ -10,12 +10,14 @@
 
 namespace Ms\Dobrozhil\Entity\Objects;
 
+use Ms\Core\Entity\ErrorCollection;
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib\Events;
 use Ms\Core\Lib\Loc;
 use Ms\Core\Lib\Logs;
 use Ms\Dobrozhil\Entity\Script;
 use Ms\Dobrozhil\Lib\Classes;
+use Ms\Dobrozhil\Lib\Errors;
 use Ms\Dobrozhil\Lib\Objects;
 use Ms\Dobrozhil\Lib\Scripts;
 use Ms\Dobrozhil\Lib\Types;
@@ -66,11 +68,16 @@ class Base
 	 * @var array|null
 	 */
 	private $_arLastMethodParams = null;
+
+	/**
+	 * @var ErrorCollection
+	 */
+	private $errorCollection = null;
 	//</editor-fold>
 
 	//</editor-fold>
 
-	//<editor-fold desc="Base methods">
+	//<editor-fold desc="Базовые методы">
 	/**
 	 * Base constructor.
 	 * Создает программный объект заданного виртуального объекта
@@ -78,9 +85,9 @@ class Base
 	 *
 	 * @param string $objectName Имя объекта
 	 */
-	public function __construct ($objectName)
+	public function __construct ($objectName=null)
 	{
-		if (Objects::checkName($objectName))
+		if (!is_null($objectName) && Objects::checkName($objectName))
 		{
 			$arRes = Tables\ObjectsTable::getOne(
 				array(
@@ -119,7 +126,8 @@ class Base
 		}
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="Protected methods">
+
+	//<editor-fold defaultstate="collapsed" desc="Наследуемые методы события">
 	/**
 	 * Вызывается перед получением значения свойства объекта
 	 * Может быть переопределен
@@ -147,9 +155,7 @@ class Base
 	protected function onCall ($name, $arParams=array()) {}
 	//</editor-fold>
 
-	//</editor-fold>
-
-	//<editor-fold defaultstate="collapsed" desc="Magic methods">
+	//<editor-fold defaultstate="collapsed" desc="Магические методы">
 	/**
 	 * Возвращает текущее значение свойства объекта
 	 *
@@ -212,10 +218,12 @@ class Base
 	/**
 	 * Возвращает true, если свойство существует и не равно null
 	 *
-	 * @param string $name Имя свойства
+	 * @param string $name       Имя свойства
+	 * @param bool   $bSaveValue Созранить значение при проверке
+	 *
 	 * @return bool
 	 */
-	final public function __isset ($name)
+	final public function __isset ($name, $bSaveValue=false)
 	{
 		if (isset($this->_arPropertyValues[$name]))
 		{
@@ -225,11 +233,20 @@ class Base
 		$arRes = Tables\ObjectsPropertyValuesTable::getOne(
 			array(
 				'select' => array('VALUE'),
-				'filter' => array('NAME'=>$this->_objectName.'.'.$name)
+				'filter' => array('OBJECT_NAME'=>$this->_objectName,'PROPERTY_NAME'=>$name)
 			)
 		);
 
-		return ($arRes && !is_null($arRes['VALUE']));
+		if ($arRes && !is_null($arRes['VALUE']))
+		{
+			if ($bSaveValue)
+			{
+				$this->_arPropertyValues[$name] = $arRes['VALUE'];
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -267,6 +284,24 @@ class Base
 		return $strReturn;
 	}
 	//</editor-fold>
+
+	//</editor-fold>
+
+	/**
+	 * Проверяет существование указанного метода у объекта
+	 *
+	 * @param string    $sMethodName        Имя метода
+	 * @param bool      $bUpdate            Принудительная проверка в базе
+	 * @param bool      $bErrorIfExist      Добавлять ошибку, если метод существует
+	 * @param bool      $bErrorIfNotExist   Добавлять ошибку, если метод не существует
+	 *
+	 * @return bool
+	 */
+	final public function issetMethod ($sMethodName, $bUpdate=false, $bErrorIfExist=false,$bErrorIfNotExist=false)
+	{
+		return Classes::issetClassMethod($this->_className,$sMethodName,$bUpdate,$bErrorIfExist,$bErrorIfNotExist);
+	}
+
 
 	//<editor-fold defaultstate="collapsed" desc="Run methods">
 	/**
@@ -317,16 +352,16 @@ class Base
 			{
 				Logs::setError(
 					//'Ошибка синтаксиса кода метода #METHOD_NAME# класса #CLASS_NAME#'
-					Loc::getModuleMessage(
-						'ms.dobrozhil',
-						'error_method_syntax',
-						array(
-							'METHOD_NAME'=>$arScriptName['METHOD'],
-							'CLASS_NAME'=>$arScriptName['CLASS']
-						)
+					Errors::getErrorTextByCode(
+						Errors::ERROR_CLASS_METHOD_CODE_SYNTAX
 					),
-					array ('ERROR_CODE'=>'METHOD_CODE_SYNTAX')
-				);
+					array(
+						'METHOD_NAME'=>$arScriptName['METHOD'],
+						'CLASS_NAME'=>$arScriptName['CLASS']
+					),
+					$this->errorCollection,
+					Errors::ERROR_CLASS_METHOD_CODE_SYNTAX
+					);
 
 				return null;
 			}
@@ -370,6 +405,7 @@ class Base
 	 */
 	public function getAllProperties ()
 	{
+		//TODO: Подумать может сделать по-другому
 		$arReturn = get_object_vars($this);
 		if (isset($arReturn['_arPropertyValues']) || is_null($arReturn['_arPropertyValues']))
 		{
@@ -413,7 +449,7 @@ class Base
 			return $this->_arPropertyValues[$sPropertyName];
 		}
 
-		//Запускаем при наличае метод onBeforeGetProperty_[propertyName]
+		//Запускаем при наличии метод onBeforeGetProperty_[propertyName]
 		$bNext = null;
 		$bNext = $this->runMethod(
 			'onBeforeGetProperty_'.$sPropertyName,
@@ -472,7 +508,7 @@ class Base
 			return null;
 		}
 
-		//Запускаем при наличае метод onAfterGetProperty_[propertyName]
+		//Запускаем при наличии метод onAfterGetProperty_[propertyName]
 		$bNext = null;
 		$bNext = $this->runMethod(
 			'onAfterGetProperty_'.$sPropertyName,
@@ -517,6 +553,17 @@ class Base
 			}
 		}
 	}
+
+	/**
+	 * Возвращает список методов класса объекта
+	 *
+	 * @return array
+	 */
+	final public function getClassMethods()
+	{
+		return get_class_methods($this);
+	}
+
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="Sets methods">

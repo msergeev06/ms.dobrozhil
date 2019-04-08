@@ -38,6 +38,61 @@ class Objects
 	private static $errorCollection = null;
 
 	/**
+	 * Проверяет правильность имени объекта.
+	 * Требования те же, что и для имени класса
+	 *
+	 * @param string $sObjectName Имя объекта
+	 * @param bool   $bAddErrors   Добавлять ли ошибку в коллекцию
+	 *
+	 * @uses Classes::checkName
+	 *
+	 * @return bool
+	 */
+	public static function checkName ($sObjectName, $bAddErrors=TRUE)
+	{
+		if (
+			!isset($sObjectName)
+			|| is_null($sObjectName)
+			|| strlen($sObjectName)<=0
+		) {
+			if ($bAddErrors)
+			{
+				//'Не указано название объекта'
+				Logs::setError(
+					'Не указано название объекта',
+					array (),
+					static::$errorCollection,
+					Errors::ERROR_NO_NAME
+				);
+			}
+			return FALSE;
+		}
+
+		$bOK = Classes::checkName($sObjectName, FALSE);
+
+		if (!$bOK)
+		{
+			if ($bAddErrors)
+			{
+				//'Имя объекта "#OBJECT_NAME#" содержит запрещенные символы',
+				Logs::setError(
+					'Имя объекта "#OBJECT_NAME#" содержит запрещенные символы',
+					['OBJECT_NAME'=>$sObjectName],
+					self::$errorCollection,
+					Errors::ERROR_WRONG_NAME
+				);
+			}
+			return FALSE;
+		}
+
+		return true;
+	}
+
+
+
+
+
+	/**
 	 * Проверяет существование заданного объекта
 	 * @deprecated
 	 * @see Objects::checkExists()
@@ -112,21 +167,6 @@ class Objects
 		);
 
 		return (!!$arRes);
-	}
-
-	/**
-	 * Проверяет правильность имени объекта.
-	 * Требования те же, что и для имени класса
-	 *
-	 * @param string $sObjectName Имя объекта
-	 *
-	 * @uses Classes::checkName
-	 *
-	 * @return bool
-	 */
-	public static function checkName ($sObjectName)
-	{
-		return Classes::checkName($sObjectName);
 	}
 
 	/**
@@ -678,6 +718,7 @@ class Objects
 	 */
 	public static function getObjectsListByClassName ($sClassName, $bFull=false)
 	{
+		//TODO: Переделать
 		if (!Classes::checkName($sClassName))
 		{
 			//'Имя класса содержит запрещенные символы'
@@ -697,10 +738,12 @@ class Objects
 				'select' => array(
 					'NAME',
 					'CLASS_NAME',
+					'TITLE',
 					'NOTE',
 					'ROOM_NAME',
 					'CREATED',
-					'UPDATED'
+					'UPDATED',
+					'SYSTEM'
 				),
 				'filter' => array('CLASS_NAME'=>$sClassName),
 				'order' => array ('NAME'=>'ASC')

@@ -10,7 +10,7 @@
 
 namespace Ms\Dobrozhil\Entity\Objects;
 
-class OperationModes extends BaseClass
+class CinemaMode extends OperationModes
 {
 	public function __construct ($objectName)
 	{

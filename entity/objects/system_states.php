@@ -10,7 +10,7 @@
 
 namespace Ms\Dobrozhil\Entity\Objects;
 
-class SystemStates extends Base
+class SystemStates extends BaseClass
 {
 	public function __construct ($objectName)
 	{

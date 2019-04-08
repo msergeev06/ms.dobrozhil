@@ -10,13 +10,12 @@
 
 namespace Ms\Dobrozhil\Tables;
 
+use Ms\Core\Entity\Application;
 use Ms\Core\Entity\Type\Date;
 use Ms\Core\Lib;
 use Ms\Core\Entity\Db\Fields;
-use Ms\Dobrozhil\Lib\Classes;
-use Ms\Dobrozhil\Lib\Objects;
-use Ms\Core\Entity\Db\DBResult;
 use Ms\Core\Lib\Loc;
+use Ms\Core\Tables\UsersTable;
 
 Loc::includeLocFile(__FILE__);
 
@@ -31,17 +30,30 @@ class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 
 	protected static function getMap ()
 	{
+		$userID = Application::getInstance()->getUser()->getID();
+
 		return array(
 			Lib\TableHelper::primaryField(),
-			new Fields\StringField('NAME',array(
-				'required' => true,
-				//'Полное имя свойства вида объект.свойство'
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_name')
-			)),
-			new Fields\StringField('TYPE',array(
-				//'Тип значения свойства'
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_type')
-			)),
+			new Fields\StringField(
+				'OBJECT_NAME',
+				array (
+					'required' => true,
+					'title' => 'Имя объекта'
+				),
+				ObjectsTable::getTableName().'.NAME',
+				'cascade',
+				'cascade'
+			),
+			new Fields\StringField(
+				'PROPERTY_NAME',
+				array (
+					'required' => true,
+					'title' => 'Имя свойства'
+				),
+				ClassPropertiesTable::getTableName().'.PROPERTY_NAME',
+				'cascade',
+				'cascade'
+			),
 			new Fields\TextField('VALUE',array(
 				//'Значение свойства'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_value')
@@ -51,39 +63,22 @@ class ObjectsPropertyValuesHistoryTable extends Lib\DataManager
 				'default_insert' => new Date(),
 				//'Время установки свойства'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_datetime')
-			))
+			)),
+			new Fields\IntegerField(
+				'CREATED_BY',
+				[
+					'required' => true,
+					'default_create' => 0,
+					'default_insert' => $userID,
+					'title' => 'Добавлено пользователем'
+				],
+				UsersTable::getTableName().'.ID'
+			),
+			new Fields\DateTimeField('CREATED_DATE',[
+				'required' => true,
+				'default_insert' => new Date(),
+				'title' => 'Время добавления'
+			])
 		);
 	}
-
-	protected static function OnAfterAdd ($arAdd,$res)
-	{
-//		static::setType($arAdd,$res);
-	}
-
-	/**
-	 * @param $arAddUpdate
-	 * @param DBResult $res
-	 */
-/*	protected static function setType ($arAddUpdate, $res)
-	{
-		if (!is_null(static::$updateType) || !$res->getResult())
-		{
-			return;
-		}
-		static::$updateType = true;
-
-		list($sObjectName,$sPropertyName) = explode('.',$arAddUpdate['NAME']);
-		$objectClassName = Objects::getClassByObject($sObjectName);
-		if ($objectClassName)
-		{
-			$objectClassName = $objectClassName['CLASS_NAME'];
-			$type = Classes::getClassPropertiesParams($objectClassName,$sPropertyName,'TYPE');
-			static::update(
-				$res->getInsertId(),
-				array('TYPE'=>strtoupper($type))
-			);
-		}
-
-		static::$updateType = null;
-	}*/
 }

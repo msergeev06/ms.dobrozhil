@@ -5,6 +5,7 @@ namespace Ms\Dobrozhil\Tables;
 use Ms\Core\Entity\Db\Fields;
 use Ms\Core\Lib\DataManager;
 use Ms\Core\Lib\Loc;
+use Ms\Core\Lib\TableHelper;
 
 Loc::includeLocFile(__FILE__);
 
@@ -15,13 +16,25 @@ class TextEditorCodeTable extends DataManager
 		return Loc::getModuleMessage('ms.dobrozhil','table_title');
 	}
 
+	public static function getInnerCreateSql ()
+	{
+		return static::addUnique('SCRIPT_NAME');
+	}
+
 	protected static function getMap ()
 	{
 		return array (
-			new Fields\StringField('NAME',array (
-				'primary' => true,
-				'title' => Loc::getModuleMessage('ms.dobrozhil','script_name')
-			)),
+			TableHelper::primaryField(),
+			new Fields\StringField(
+				'SCRIPT_NAME',
+				array (
+					'required' => true,
+					'title' => Loc::getModuleMessage('ms.dobrozhil','script_name')
+				),
+				ScriptsTable::getTableName().'.NAME',
+				'cascade',
+				'cascade'
+			),
 			new Fields\TextField('CODE',array (
 				'title' => Loc::getModuleMessage('ms.dobrozhil','script_code')
 			))
@@ -32,42 +45,43 @@ class TextEditorCodeTable extends DataManager
 	{
 		return array(
 			array(
-				'NAME' => 'CSystem.setMaxVolume',
+				'SCRIPT_NAME' => 'CSystem.setMaxVolume',
 				'CODE' => '$this->volumeLevel = 100;'
 			),
 			array(
-				'NAME' => 'CSystem.setMute',
+				'SCRIPT_NAME' => 'CSystem.setMute',
 				'CODE' => '$this->volumeLevel = 0;'
 			),
 			array(
-				'NAME' => 'COperationModes.activateMode',
+				'SCRIPT_NAME' => 'COperationModes.activateMode',
 				'CODE' => '$this->isActive = true;'
 			),
 			array(
-				'NAME' => 'COperationModes.deactivateMode',
+				'SCRIPT_NAME' => 'COperationModes.deactivateMode',
 				'CODE' => '$this->isActive = false;'
 			),
 			array(
-				'NAME' => 'COperationModes.onChange_isActive'
+				'SCRIPT_NAME' => 'COperationModes.onChange_isActive'
 			),
 			array(
-				'NAME' => 'CSystemStates.setGreen',
+				'SCRIPT_NAME' => 'CSystemStates.setGreen',
 				'CODE' => 'if ($this->state != "green")'."\n{\n"
 					.'   $this->state = "green";'."\n}\n"
 			),
 			array(
-				'NAME' => 'CSystemStates.setYellow',
+				'SCRIPT_NAME' => 'CSystemStates.setYellow',
 				'CODE' => 'if ($this->state != "yellow")'."\n{\n"
 					.'   $this->state = "yellow";'."\n}\n"
 			),
 			array(
-				'NAME' => 'CSystemStates.setRed',
+				'SCRIPT_NAME' => 'CSystemStates.setRed',
 				'CODE' => 'if($this->state != "red")'."\n{\n"
 					.'   $this->state = "red";'."\n}\n"
 			),
 			array(
-				'NAME' => 'CSystemStates.onChange_state',
-				'CODE' => 'switch ($this->state)'."\n{\n"
+				'SCRIPT_NAME' => 'CSystemStates.onChange_state',
+				'CODE' => 'switch ($this->state)'
+					."\n{\n"
 					.'   case "green":'."\n"
 					.'      say($this->textSayGreen, $this->sayLevelGreen,"SystemStates");'."\n"
 					.'      break;'."\n"
@@ -76,7 +90,8 @@ class TextEditorCodeTable extends DataManager
 					.'      break;'."\n"
 					.'   case "green":'."\n"
 					.'      say($this->textSayRed, $this->sayLevelRed,"SystemStates");'."\n"
-					.'      break;'."\n}\n"
+					.'      break;'
+					."\n}\n"
 			)
 		);
 	}

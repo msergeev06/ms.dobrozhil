@@ -42,13 +42,27 @@ class TypeBool implements TypeProcessing
 		return 'B';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
-		return Tools::validateBoolVal($value);
+		if (is_null($value))
+		{
+			return NULL;
+		}
+		else
+		{
+			return Tools::validateBoolVal($value);
+		}
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
-		return ($value)?'Y':'N';
+		if (is_null($value))
+		{
+			return NULL;
+		}
+		else
+		{
+			return ($value)?'Y':'N';
+		}
 	}
 }

@@ -143,9 +143,9 @@ class Cron
 					'select' => array(
 						'ID',
 						'CRON_EXPRESSION',
-						'CODE_CONDITION',
-						'CODE',
-						'SCRIPT_NAME'
+						'CODE_CONDITION'
+/*						'CODE',
+						'SCRIPT_NAME'*/
 					),
 					'filter' => array (
 						'ACTIVE'=>true,

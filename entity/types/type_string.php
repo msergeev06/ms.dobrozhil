@@ -38,13 +38,21 @@ class TypeString implements TypeProcessing
 		return 'S';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=NULL)
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return (string)$value;
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return (string)$value;
 	}
 }

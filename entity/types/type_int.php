@@ -39,13 +39,21 @@ class TypeInt implements TypeProcessing
 		return 'N:INT';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return Tools::validateIntVal($value);
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return (string)Tools::validateIntVal($value);
 	}
 }

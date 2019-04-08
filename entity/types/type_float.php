@@ -39,13 +39,21 @@ class TypeFloat implements TypeProcessing
 		return 'N';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return Tools::validateFloatVal($value);
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=NULL): string
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return (string)Tools::validateFloatVal($value);
 	}
 }

@@ -58,6 +58,42 @@ class ScriptsTable extends DataManager
 				//'Класс, который предоставляет код скрипта'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_class')
 			)),
+			new Fields\StringField(
+				'CLASS_NAME',
+				array (
+					'title' => 'Имя класса метода'
+				),
+				ClassesTable::getTableName().'.NAME',
+				'cascade',
+				'cascade'
+			),
+			new Fields\StringField(
+				'METHOD_NAME',
+				array (
+					'title' => 'Имя метода класса'
+				),
+				ClassMethodsTable::getTableName().'.METHOD_NAME',
+				'cascade',
+				'cascade'
+			),
+			new Fields\IntegerField(
+				'CRON_JOB_ID',
+				array (
+					'title' => 'Задание крона'
+				),
+				CronTable::getTableName().'.ID',
+				'cascade',
+				'cascade'
+			),
+			new Fields\StringField(
+				'SCHEDULER_NAME',
+				array (
+					'title' => 'Задание планировщика'
+				),
+				SchedulerTable::getTableName().'.NAME',
+				'cascade',
+				'cascade'
+			),
 /*			new Fields\TextField('CODE',array (
 				//'Код скрипта модуля ms.dobrozhil'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_code')
@@ -66,10 +102,21 @@ class ScriptsTable extends DataManager
 				//'Краткое описание скрипта'
 				'title' => Loc::getModuleMessage('ms.dobrozhil','field_note')
 			)),
-			new Fields\IntegerField('CATEGORY_ID',array (
-				'link' => ScriptsCategoriesTable::getTableName().'.ID',
-				//'ID категории скрипта'
-				'title' => Loc::getModuleMessage('ms.dobrozhil','field_category_id')
+			new Fields\IntegerField(
+				'CATEGORY_ID',
+				array (
+					//'ID категории скрипта'
+					'title' => Loc::getModuleMessage('ms.dobrozhil','field_category_id')
+				),
+				ScriptsCategoriesTable::getTableName().'.ID',
+				'cascade',
+				'set_null'
+			),
+			new Fields\BooleanField('SYSTEM',array (
+				'required' => true,
+				'default_create' => false,
+				'default_insert' => false,
+				'title' => 'Флаг системного метода'
 			)),
 			new Fields\DateTimeField('LAST_RUN',array (
 				//'Время последнего запуска скрипта'
@@ -101,39 +148,57 @@ class ScriptsTable extends DataManager
 		return array(
 			array(
 				'NAME'=>'CSystem.setMaxVolume',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'CSystem',
+				'METHOD_NAME' => 'setMaxVolume',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'CSystem.setMute',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'CSystem',
+				'METHOD_NAME' => 'setMute',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'COperationModes.activateMode',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'COperationModes',
+				'METHOD_NAME' => 'activateMode',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'COperationModes.deactivateMode',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'COperationModes',
+				'METHOD_NAME' => 'deactivateMode',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'COperationModes.onChange_isActive',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'COperationModes',
+				'METHOD_NAME' => 'onChange_isActive',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'CSystemStates.setGreen',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'CSystemStates',
+				'METHOD_NAME' => 'setGreen',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'CSystemStates.setYellow',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'CSystemStates',
+				'METHOD_NAME' => 'setYellow',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'CSystemStates.setRed',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'CSystemStates',
+				'METHOD_NAME' => 'setRed',
+				'SYSTEM' => true
 			),
 			array(
 				'NAME'=>'CSystemStates.onChange_state',
-				'CATEGORY_ID' => 1
+				'CLASS_NAME' => 'CSystemStates',
+				'METHOD_NAME' => 'onChange_state',
+				'SYSTEM' => true
 			)
 		);
 	}

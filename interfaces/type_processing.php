@@ -17,13 +17,32 @@ namespace Ms\Dobrozhil\Interfaces;
  */
 interface TypeProcessing
 {
+	/**
+	 * @return TypeProcessing
+	 */
 	public static function getInstance (): TypeProcessing;
 
+	/**
+	 * @return string
+	 */
 	public function getTitle ():string;
 
+	/**
+	 * @return string
+	 */
 	public function getCode (): string;
 
-	public function processingValueFromDB (string $value);
+	/**
+	 * @param null|string $value
+	 *
+	 * @return mixed
+	 */
+	public function processingValueFromDB (string $value=null);
 
-	public function processingValueToDB ($value): string;
+	/**
+	 * @param null|mixed $value
+	 *
+	 * @return string
+	 */
+	public function processingValueToDB ($value=null): string;
 }

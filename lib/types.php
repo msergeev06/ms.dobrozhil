@@ -21,6 +21,66 @@ use Ms\Dobrozhil\Interfaces\TypeProcessing;
 
 class Types
 {
+	/*
+		 * S - string - Строка
+		 *  S:DATE - Date - Дата
+		 *  S:DATETIME - Date - Дата/Время
+		 *  S:TIME - Date - Время
+		 *  S:COLOR - Color - HEX-цвет
+		 *  S:COORDINATES - Coordinates - Координаты
+		 * N - float - Число
+		 *  N:INT - int - Целое число
+		 *  N:FILE - File - Файл
+		 *  N:TIMESTAMP - Date - Метка времени Unix
+		 * B - bool - Флаг
+	 */
+	/**
+	 * Базовый тип Строка (string)
+	 */
+	const BASE_TYPE_STRING = 'S';
+	/**
+	 * Базовый тип Число (float)
+	 */
+	const BASE_TYPE_NUMERIC = 'N';
+	/**
+	 * Базовый тип Флаг (bool)
+	 */
+	const BASE_TYPE_BOOL = 'B';
+
+	/**
+	 * Тип Строка->Дата (Date)
+	 */
+	const TYPE_S_DATE = 'S:DATE';
+	/**
+	 * Тип Строка->Дата/Время (Date)
+	 */
+	const TYPE_S_DATETIME = 'S:DATETIME';
+	/**
+	 * Тип Строка->Время (Date)
+	 */
+	const TYPE_S_TIME = 'S:TIME';
+	/**
+	 * Тип Строка->Цвет (Color)
+	 */
+	const TYPE_S_COLOR = 'S:COLOR';
+	/**
+	 * Тип Строка->Координаты (Coordinates)
+	 */
+	const TYPE_S_COORDINATES = 'S:COORDINATES';
+
+	/**
+	 * Тип Число->Целое число (int)
+	 */
+	const TYPE_N_INT = 'N:INT';
+	/**
+	 * Тип Число->Файл (File)
+	 */
+	const TYPE_N_FILE = 'N:FILE';
+	/**
+	 * Тип Число->Метка времени UNIX (Date)
+	 */
+	const TYPE_N_TIMESTAMP = 'N:TIMESTAMP';
+
 	/**
 	 * @var ErrorCollection
 	 */
@@ -35,7 +95,7 @@ class Types
 	 *
 	 * @return TypeProcessing
 	 */
-	public static function getHandler ($sType='S')
+	public static function getHandler ($sType=self::BASE_TYPE_STRING)
 	{
 		$handler = null;
 		$sType = strtoupper($sType);
@@ -66,19 +126,19 @@ class Types
 				}
 				switch ($arType[0])
 				{
-					case 'N':
+					case self::BASE_TYPE_NUMERIC:
 						/**
 						 * @var TypeProcessing $handler
 						 */
 						$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance');
 						break;
-					case 'B':
+					case self::BASE_TYPE_BOOL:
 						/**
 						 * @var TypeProcessing $handler
 						 */
 						$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeBool::getInstance');
 						break;
-					default: //S
+					default: //self::BASE_TYPE_STRING
 						/**
 						 * @var TypeProcessing $handler
 						 */
@@ -100,8 +160,12 @@ class Types
 	 *
 	 * @return mixed
 	 */
-	public static function prepareValueFrom ($mValue, $sType='S')
+	public static function prepareValueFrom ($mValue, $sType=self::BASE_TYPE_STRING)
 	{
+		if (is_null($sType))
+		{
+			$sType = static::BASE_TYPE_STRING;
+		}
 		$handler = static::getHandler($sType);
 
 		return $handler->processingValueFromDB($mValue);
@@ -115,11 +179,18 @@ class Types
 	 *
 	 * @return mixed
 	 */
-	public static function prepareValueTo ($mValue, $sType='S')
+	public static function prepareValueTo ($mValue, $sType=self::BASE_TYPE_STRING)
 	{
-		$handler = static::getHandler($sType);
+		if (!is_null($mValue))
+		{
+			$handler = static::getHandler($sType);
 
-		return $handler->processingValueFromDB($mValue);
+			return $handler->processingValueFromDB($mValue);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public static function getTitle ($sType)
@@ -163,34 +234,34 @@ class Types
 
 		switch ($sType)
 		{
-			case 'B':
+			case self::BASE_TYPE_BOOL:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeBool::getInstance');
 				break;
-			case 'S:DATE':
+			case self::TYPE_S_DATE:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeDate::getInstance');
 				break;
-			case 'S:DATETIME':
+			case self::TYPE_S_DATETIME:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeDatetime::getInstance');
 				break;
-			case 'S:TIME':
+			case self::TYPE_S_TIME:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeTime::getInstance');
 				break;
-			case 'S:COLOR':
+			case self::TYPE_S_COLOR:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeColor::getInstance');
 				break;
-			case 'S:COORDINATES':
+			case self::TYPE_S_COORDINATES:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeCoordinates::getInstance');
 				break;
-			case 'N':
+			case self::BASE_TYPE_NUMERIC:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeFloat::getInstance');
 				break;
-			case 'N:INT':
+			case self::TYPE_N_INT:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeInt::getInstance');
 				break;
-			case 'N:FILE':
+			case self::TYPE_N_FILE:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeFile::getInstance');
 				break;
-			case 'N:TIMESTAMP':
+			case self::TYPE_N_TIMESTAMP:
 				$handler = call_user_func('Ms\Dobrozhil\Entity\Types\TypeTimestamp::getInstance');
 				break;
 			default:

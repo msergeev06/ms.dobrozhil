@@ -39,14 +39,22 @@ class TypeTimestamp implements TypeProcessing
 		return 'N:TIMESTAMP';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return new Date($value,'time');
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
-		if ($value instanceof Date)
+		if (is_null($value))
+		{
+			return NULL;
+		}
+		elseif ($value instanceof Date)
 		{
 			return (string)$value->getTimestamp();
 		}

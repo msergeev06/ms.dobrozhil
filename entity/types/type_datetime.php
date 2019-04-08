@@ -39,14 +39,22 @@ class TypeDatetime implements TypeProcessing
 		return 'S:DATETIME';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return new Date($value,'db_datetime');
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
-		if ($value instanceof Date)
+		if (is_null($value))
+		{
+			return null;
+		}
+		elseif ($value instanceof Date)
 		{
 			return $value->getDateTimeDB();
 		}

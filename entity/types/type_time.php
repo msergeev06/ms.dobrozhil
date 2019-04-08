@@ -39,14 +39,22 @@ class TypeTime implements TypeProcessing
 		return 'S:TIME';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		return new Date($value,'site_time');
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
-		if ($value instanceof Date)
+		if (is_null($value))
+		{
+			return NULL;
+		}
+		elseif ($value instanceof Date)
 		{
 			return $value->getTimeSite();
 		}

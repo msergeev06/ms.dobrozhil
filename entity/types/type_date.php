@@ -39,14 +39,22 @@ class TypeDate implements TypeProcessing
 		return 'S:DATE';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
+		if (is_null($value))
+		{
+			return null;
+		}
 		return new Date($value);
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
-		if ($value instanceof Date)
+		if (is_null($value))
+		{
+			return NULL;
+		}
+		elseif ($value instanceof Date)
 		{
 			return $value->getDateDB();
 		}

@@ -38,13 +38,24 @@ class TypeColor implements TypeProcessing
 		return 'S:COLOR';
 	}
 
-	public function processingValueFromDB (string $value)
+	public function processingValueFromDB (string $value=null)
 	{
-		return (string)$value;
+		if (is_null($value))
+		{
+			return NULL;
+		}
+		else
+		{
+			return (string)$value;
+		}
 	}
 
-	public function processingValueToDB ($value): string
+	public function processingValueToDB ($value=null): string
 	{
+		if (is_null($value))
+		{
+			return NULL;
+		}
 		if (!strpos($value,'#')===false)
 		{
 			$value = '#'.$value;
