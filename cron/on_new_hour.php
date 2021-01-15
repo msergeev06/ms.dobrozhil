@@ -14,10 +14,13 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__).'/../../../../';
+include ('crontab.php');
+
+use \Ms\Dobrozhil\Events\CronController;
 
 set_time_limit(0);
 //Защита от ошибок при перезагрузке
+$startTime = time();
 while (1)
 {
 	if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/reboot')
@@ -28,10 +31,13 @@ while (1)
 	{
 		break;
 	}
+	if ((time()-$startTime) > (30*60))
+	{
+		die();
+	}
 	sleep(5);
 }
 
-define('MS_NO_CHECK_AGENTS',true);
 include_once (dirname(__FILE__)."/../../../core/prolog_before.php");
 
 $now = new \Ms\Core\Entity\Type\Date();
@@ -39,22 +45,22 @@ $now = new \Ms\Core\Entity\Type\Date();
 //Если начался новый год
 if ($now->format('d.m.H') == '01.01.00')
 {
-	\Ms\Dobrozhil\Lib\Cron::initOnNewYear();
+	CronController::getInstance()->initOnNewYear();
 }
 //Если начался новый месяц
 if ($now->format('d.H') == '01.00')
 {
-	\Ms\Dobrozhil\Lib\Cron::initOnNewMonth();
+    CronController::getInstance()->initOnNewMonth();
 }
 //Если началась новая неделя
 if ((int)$now->format('w') == 1 && $now->format('H') == '00')
 {
-	\Ms\Dobrozhil\Lib\Cron::initOnNewWeek();
+    CronController::getInstance()->initOnNewWeek();
 }
 //Если начался новый день
 if ($now->format('H') == '00')
 {
-	\Ms\Dobrozhil\Lib\Cron::initOnNewDay();
+    CronController::getInstance()->initOnNewDay();
 }
 
-\Ms\Dobrozhil\Lib\Cron::initOnNewHour();
+CronController::getInstance()->initOnNewHour();

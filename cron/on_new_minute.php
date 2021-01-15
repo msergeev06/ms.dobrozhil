@@ -7,8 +7,7 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-
-$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__).'/../../../../';
+include ('crontab.php');
 
 set_time_limit(0);
 
@@ -20,18 +19,26 @@ if (file_exists($_SERVER['DOCUMENT_ROOT'].'/reboot')
 	die();
 }
 
+define('NO_HTTP_AUTH',true);
+define('RUN_CRONTAB_JOB',true);
+define('NO_CHECK_AGENTS',true);
+
 include_once (dirname(__FILE__)."/../../../core/prolog_before.php");
+
+use Ms\Dobrozhil\Events\CronController;
 
 if (file_exists($_SERVER['DOCUMENT_ROOT'].'/startup'))
 {
-	\Ms\Dobrozhil\Lib\Cron::initOnStartUp(null);
+    CronController::getInstance()->initOnStartUp(null);
 
 	if (file_exists($_SERVER['DOCUMENT_ROOT'].'/startup'))
 	{
 		unlink($_SERVER['DOCUMENT_ROOT'].'/startup');
 	}
 
-	\Ms\Core\Lib\Logs::setInfo('Все стартовые действия завершены. Система запущена.');
+	(new \Ms\Core\Entity\Errors\FileLogger('ms.dobrozhil','debug'))
+        ->addMessage('Все стартовые действия завершены. Система запущена.')
+    ;
 }
 
-\Ms\Dobrozhil\Lib\Cron::initOnNewMinute();
+CronController::getInstance()->initOnNewMinute();

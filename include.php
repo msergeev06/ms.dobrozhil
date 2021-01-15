@@ -7,8 +7,7 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-use Ms\Core\Lib\Loader;
-use Ms\Core\Entity\Application;
+use Ms\Core\Entity\System\Application;
 $app = Application::getInstance();
 
 $moduleName = 'ms.dobrozhil';

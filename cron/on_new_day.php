@@ -4,10 +4,10 @@
  *
  * @package Ms\Dobrozhil
  * @author Mikhail Sergeev <msergeev06@gmail.com>
- * @copyright 2018 Mikhail Sergeev
+ * @copyright 2021 Mikhail Sergeev
  */
 
-$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__).'/../../../../';
+include ('crontab.php');
 
 set_time_limit(0);
 //Защита от ошибок при перезагрузке
@@ -23,9 +23,17 @@ while (1)
 	}
 }
 
-define('MS_NO_CHECK_AGENTS',true);
-include_once (dirname(__FILE__)."/../../../core/prolog_before.php");
+define('NO_HTTP_AUTH',true);
+define('RUN_CRONTAB_JOB',true);
+define('NO_CHECK_AGENTS',true);
+include_once ($_SERVER['DOCUMENT_ROOT']."/ms/core/prolog_before.php");
 
-\Ms\Core\Lib\Logs::setInfo('Запуск события OnNewDay');
+(new \Ms\Core\Entity\Errors\FileLogger('ms.dobrozhil'))
+    ->setTypeDebug()
+    ->addMessage('Запуск события OnNewDay')
+;
 
-\Ms\Core\Lib\Events::runEvents('ms.dobrozhil','OnNewDay');
+\Ms\Core\Api\ApiAdapter::getInstance()
+    ->getEventsApi()
+    ->runEvents('ms.dobrozhil','OnNewDay')
+;

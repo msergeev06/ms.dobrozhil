@@ -7,7 +7,9 @@
  * @copyright 2018 Mikhail Sergeev
  */
 
-$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__).'/../../../../';
+use \Ms\Dobrozhil\Events\CronController;
+
+$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../../../');
 
 set_time_limit(0);
 
@@ -29,23 +31,24 @@ if (file_exists($_SERVER['DOCUMENT_ROOT'].'/shutdown'))
 exec('sudo ntpdate -u ntp.ubuntu.com',$out);
 echo implode("\n",$out)."\n";
 
+
+include_once ($_SERVER['DOCUMENT_ROOT']."/ms/core/prolog_before.php");
+
+$logger = (new \Ms\Core\Entity\Errors\FileLogger('ms.dobrozhil','debug'));
 if (!$bGoodStart)
 {
-	\Ms\Core\Lib\Logs::setInfo('Система загружена после непредвиденного завершения работы.');
+	$logger->addMessage('Система загружена после непредвиденного завершения работы.');
 }
 else
 {
-	\Ms\Core\Lib\Logs::setInfo('Система успешно загружена.');
+	$logger->addMessage('Система успешно загружена.');
 }
 
-define('MS_NO_CHECK_AGENTS',true);
-include_once ($_SERVER['DOCUMENT_ROOT']."/ms/core/prolog_before.php");
-
-\Ms\Dobrozhil\Lib\Cron::initOnStartUp($bGoodStart);
+    CronController::getInstance()->initOnStartUp($bGoodStart);
 
 if (file_exists($_SERVER['DOCUMENT_ROOT'].'/startup'))
 {
 	unlink($_SERVER['DOCUMENT_ROOT'].'/startup');
 }
 
-\Ms\Core\Lib\Logs::setInfo('Все стартовые действия завершены. Система запущена.');
+$logger->addMessage('Все стартовые действия завершены. Система запущена.');

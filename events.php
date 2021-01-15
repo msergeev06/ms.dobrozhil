@@ -42,4 +42,15 @@ $arReturn['OnAfterChangeClassName'] = array (
 $arReturn['OnChangeClassName'] = array ();
 $arReturn['OnAfterChangeClassName'] = array ();
 
+//ms/components/ms/dobrozhil.obj.class.view/class.php
+$arReturn['OnBeforeUpdateClassParams'] = []; //147
+$arReturn['OnAfterUpdateClassParams'] = []; //157
+$arReturn['OnBeforeChangeClassParent'] = []; //166
+$arReturn['OnAfterChangeClassParent'] = []; //175
+
+//ms/modules/ms.dobrozhil/classes/Types/TypeBuilder.php
+$arReturn['OnGetTypeCodesList'] = []; //96
+$arReturn['OnGetTypeHandler'] = []; //105
+
+
 return $arReturn;
